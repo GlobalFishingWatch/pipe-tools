@@ -1,4 +1,4 @@
-import  ujson
+import ujson
 import apache_beam as beam
 
 

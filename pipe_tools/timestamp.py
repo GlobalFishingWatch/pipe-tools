@@ -3,6 +3,7 @@ import udatetime
 import pytz
 
 import apache_beam as beam
+from apache_beam.transforms.window import TimestampedValue
 
 EPOCH = udatetime.utcfromtimestamp(0)
 SECONDS_IN_DAY = 60 * 60 * 24
@@ -190,3 +191,15 @@ class SafeParseBeamBQStrTimestamp(beam.DoFn):
             new_element[f] = timestampFromBeamBQStr(element[f])
         yield new_element
 
+
+class TimestampedValueDoFn(beam.DoFn):
+    """Use this to extract a timestamp from a message.  process() expects a dict with the
+    specified field containing a unix timestamp"""
+
+    def __init__(self, field='timestamp'):
+        self.timestamp_field = field
+
+    def process(self, msg):
+        # Wrap and emit the current entry and new timestamp in a
+        # TimestampedValue.
+        yield TimestampedValue(msg, msg[self.timestamp_field])

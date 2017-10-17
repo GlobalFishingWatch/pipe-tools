@@ -7,10 +7,9 @@ import logging
 import six
 
 import apache_beam as beam
-from apache_beam import PTransform
 from apache_beam.io.filebasedsink import FileBasedSink
 from apache_beam.io.filebasedsink import FileBasedSinkWriter
-from apache_beam.coders import TimestampCoder
+from apache_beam import PTransform
 from apache_beam import core
 from apache_beam import window
 from apache_beam.io.filesystem import CompressionTypes
@@ -19,11 +18,10 @@ from apache_beam.io.filesystems import FileSystems
 from apache_beam.io.filesystem import BeamIOError
 from apache_beam.internal import util
 
-
-
 from pipe_tools.timestamp import SECONDS_IN_DAY
 from pipe_tools.timestamp import datetimeFromTimestamp
 from pipe_tools.coders import JSONCoder
+
 
 class WriteToDatePartitionedFiles(PTransform):
     """
@@ -76,7 +74,6 @@ class DateShardDoFn(beam.DoFn):
         self.shard_counter = random.randint(0, self.shards_per_day - 1)
 
     def process(self, element, timestamp=beam.DoFn.TimestampParam):
-
         # get the timestamp at the start of the day that contains this element
         date = (int(timestamp) / SECONDS_IN_DAY) * SECONDS_IN_DAY
         shard = self.shard_counter

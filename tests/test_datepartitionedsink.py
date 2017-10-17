@@ -1,20 +1,14 @@
-import pytest
-import pytz
 import posixpath as pp
 
-import apache_beam as beam
-from apache_beam.transforms import window
+import pytest
 from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
-from apache_beam.utils.timestamp import Timestamp
-from apache_beam.transforms.window import TimestampedValue
-from apache_beam.transforms.window import WindowedValue
 from apache_beam.testing.util import assert_that
 from apache_beam.testing.util import equal_to
-from apache_beam.options.pipeline_options import PipelineOptions
+from apache_beam.transforms.window import TimestampedValue
 
-from pipe_tools.timestamp import *
-from pipe_tools.io.datepartitionedsink import WriteToDatePartitionedFiles
 from pipe_tools.io.datepartitionedsink import DatePartitionedFileSink
+from pipe_tools.io.datepartitionedsink import WriteToDatePartitionedFiles
+from pipe_tools.timestamp import *
 
 
 @pytest.mark.filterwarnings('ignore:Using fallback coder:UserWarning')
