@@ -4,6 +4,9 @@ import pytz
 
 import apache_beam as beam
 from apache_beam.transforms.window import TimestampedValue
+from apache_beam import typehints
+
+from pipe_tools.coders import JSONDict
 
 EPOCH = udatetime.utcfromtimestamp(0)
 SECONDS_IN_DAY = 60 * 60 * 24
@@ -70,6 +73,7 @@ datetime.  And if you need to write one out to json, use a float or a RFC3339 st
 
 """
 
+T = beam.typehints.TypeVariable('T')
 
 
 def datetimeFromTimestamp(ts):
@@ -134,7 +138,9 @@ def timestampFromRfc3339str(s):
     return timestampFromUdatetime(udatetime.from_string(s))
 
 
-class ParseBeamBQStrTimestamp(beam.DoFn):
+@typehints.with_input_types(JSONDict)
+@typehints.with_output_types(JSONDict)
+class ParseBeamBQStrTimestampDoFn(beam.DoFn):
     """Convert timestamp fields from Beam/BigQuery formatted string to timestamp
 
     Assumes that the elements in the pcoll are dicts
@@ -155,7 +161,7 @@ class ParseBeamBQStrTimestamp(beam.DoFn):
         self._fields = fields
         if isinstance(self._fields, basestring):
             self._fields = [self._fields]
-        super(ParseBeamBQStrTimestamp, self).__init__()
+        super(ParseBeamBQStrTimestampDoFn, self).__init__()
 
 
     def process(self, element):
@@ -164,7 +170,9 @@ class ParseBeamBQStrTimestamp(beam.DoFn):
         yield element
 
 
-class SafeParseBeamBQStrTimestamp(beam.DoFn):
+@typehints.with_input_types(JSONDict)
+@typehints.with_output_types(JSONDict)
+class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
     """Convert timestamp fields from Beam/BigQuery formatted string to timestamp
 
     Assumes that the elements in the pcoll are dicts
@@ -175,7 +183,7 @@ class SafeParseBeamBQStrTimestamp(beam.DoFn):
     immediately after a read from BigQuery, then you can probably use ParseBeamBQStrTimestamp
     instead.
 
-    Note that if yout dict has nested iterables like a list, then this is not really safe either and
+    Note that if your dict has nested iterables like a list, then this is not really safe either and
     you will really want something that does a deepcopy
     """
 
@@ -183,15 +191,17 @@ class SafeParseBeamBQStrTimestamp(beam.DoFn):
         self.fields = fields
         if isinstance(self.fields, basestring):
             self.fields = [self.fields]
-        super(SafeParseBeamBQStrTimestamp, self).__init__()
+        super(SafeParseBeamBQStrTimestampDoFn, self).__init__()
 
     def process(self, element):
-        new_element = dict(element)
+        new_element = JSONDict(element)
         for f in self.fields:
             new_element[f] = timestampFromBeamBQStr(element[f])
         yield new_element
 
 
+@typehints.with_input_types(JSONDict)
+@typehints.with_output_types(JSONDict)
 class TimestampedValueDoFn(beam.DoFn):
     """Use this to extract a timestamp from a message.  process() expects a dict with the
     specified field containing a unix timestamp"""

@@ -11,7 +11,7 @@ from apache_beam.io.filebasedsink import FileBasedSink
 from apache_beam.io.filebasedsink import FileBasedSinkWriter
 from apache_beam import PTransform
 from apache_beam import core
-from apache_beam import window
+from apache_beam.transforms import window
 from apache_beam.io.filesystem import CompressionTypes
 from apache_beam.transforms.display import DisplayDataItem
 from apache_beam.io.filesystems import FileSystems
@@ -20,22 +20,29 @@ from apache_beam.internal import util
 
 from pipe_tools.timestamp import SECONDS_IN_DAY
 from pipe_tools.timestamp import datetimeFromTimestamp
-from pipe_tools.coders import JSONCoder
+from pipe_tools.coders import JSONDictCoder
+from pipe_tools.coders import JSONDict
+from apache_beam import typehints
+from apache_beam.typehints import Tuple, KV
+
+T = typehints.TypeVariable('T')
 
 
+@typehints.with_input_types(JSONDict)
+@typehints.with_output_types(str)
 class WriteToDatePartitionedFiles(PTransform):
     """
-    Write the incoming pcoll to files partitioned by date.  The date is take from the
-    TimestampedValue associated wth each element.
+    Write the incoming pcoll to files partitioned by date.  The date is taken from the
+    TimestampedValue associated with each element.
 
     """
     def __init__(self,
                  file_path_prefix,
                  file_name_suffix='',
                  append_trailing_newlines=True,
-                 shards_per_day=1,
+                 shards_per_day=3,
                  shard_name_template=None,
-                 coder=JSONCoder(),
+                 coder=JSONDictCoder(),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
 
@@ -44,7 +51,6 @@ class WriteToDatePartitionedFiles(PTransform):
         self._sink = DatePartitionedFileSink(file_path_prefix,
                                              file_name_suffix=file_name_suffix,
                                              append_trailing_newlines=append_trailing_newlines,
-                                             num_shards=1,
                                              shard_name_template=shard_name_template,
                                              coder=coder,
                                              compression_type=compression_type,
@@ -56,10 +62,12 @@ class WriteToDatePartitionedFiles(PTransform):
             | core.WindowInto(window.GlobalWindows())
             | beam.ParDo(DateShardDoFn(shards_per_day=self.shards_per_day))
             | beam.GroupByKey()   # group by day and shard
-            | beam.io.Write(self._sink)
+            | beam.io.Write(self._sink).with_output_types(str)
         )
 
 
+@typehints.with_input_types(T)
+@typehints.with_output_types(KV[Tuple[int,int],T])
 class DateShardDoFn(beam.DoFn):
     """
     Apply date and shard number
@@ -81,7 +89,7 @@ class DateShardDoFn(beam.DoFn):
         self.shard_counter += 1
         if self.shard_counter >= self.shards_per_day:
             self.shard_counter -= self.shards_per_day
-
+        assert isinstance(element, JSONDict)
         # get timestamp from TimestampedValue
         yield ((date, shard), element)
 
@@ -93,16 +101,15 @@ class DatePartitionedFileSink(FileBasedSink):
                  file_path_prefix,
                  file_name_suffix='',
                  append_trailing_newlines=True,
-                 num_shards=0,
                  shard_name_template=None,
-                 coder=JSONCoder(),
+                 coder=JSONDictCoder(),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
 
         super(DatePartitionedFileSink, self).__init__(
             file_path_prefix,
             file_name_suffix=file_name_suffix,
-            num_shards=num_shards,
+            num_shards=0,
             shard_name_template=shard_name_template,
             coder=coder,
             mime_type='text/plain',

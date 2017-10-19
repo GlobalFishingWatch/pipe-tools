@@ -36,13 +36,13 @@ class TestTimestampTools():
         timestamp_fields = 'timestamp'
 
         with _TestPipeline() as p:
-            fields = p | beam.Create(source)
+            fields = p | beam.Create(source).with_output_types(JSONDict)
 
             # Note: Must do 'safe' first, because 'fast' modifies the elements in place so
             # running 'safe' after will get the modified elements instead of the originals
 
-            safe = fields | beam.ParDo(SafeParseBeamBQStrTimestamp(fields=timestamp_fields))
-            fast = fields | beam.ParDo(ParseBeamBQStrTimestamp(fields=timestamp_fields))
+            safe = fields | beam.ParDo(SafeParseBeamBQStrTimestampDoFn(fields=timestamp_fields))
+            fast = fields | beam.ParDo(ParseBeamBQStrTimestampDoFn(fields=timestamp_fields))
 
             assert_that(fast, equal_to(expected))
             assert_that(safe, equal_to(expected), label='safe')

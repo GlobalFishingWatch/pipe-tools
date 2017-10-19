@@ -55,7 +55,7 @@ class TestDeleteMe():
         with _TestPipeline(options=pipeline_options) as p:
             result = (
                 p | beam.io.Read(source)
-                | beam.ParDo(ParseBeamBQStrTimestamp())
+                | beam.ParDo(ParseBeamBQStrTimestampDoFn())
                 | beam.WindowInto(window.FixedWindows(day))
                 | beam.ParDo(AddWindow())
                 # | beam.io.WriteToBigQuery(table='world-fishing-827:scratch_paul.timestamp_test_b',

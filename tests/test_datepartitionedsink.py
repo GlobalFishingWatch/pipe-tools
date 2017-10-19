@@ -24,7 +24,7 @@ class TestDatePartitionedSink():
         count = 24 * 3  # 3 days
         ts = start_ts
         for t in xrange(count):
-            yield {'mmsi': 1, 'timestamp': ts}
+            yield JSONDict(mmsi=1, timestamp= ts)
             ts += increment
 
     def test_as_pipeline(self, temp_dir):
@@ -46,7 +46,7 @@ class TestDatePartitionedSink():
                 | beam.Map(lambda msg: (TimestampedValue(msg, msg['timestamp'])))
             )
 
-            result = messages | WriteToDatePartitionedFiles(file_path_prefix, file_name_suffix)
+            result = messages | WriteToDatePartitionedFiles(file_path_prefix, file_name_suffix, shards_per_day=1)
             expected = ['%s%s%s'% (pp.join(file_path_base, date, file_name_prefix),
                                    '-00000-of-00001', file_name_suffix)for date in dates]
             assert_that(result, equal_to(expected))

@@ -1,1 +1,2 @@
-from generator import TimestampMessageGenerator
+from generator import MessageGenerator
+from generator import GenerateMessages
