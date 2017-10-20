@@ -29,10 +29,9 @@ beam.coders.registry.register_coder(JSONDict, JSONDictCoder)
 
 class ReadAsJSONDict(PTransform):
     """
-    We need this because providing a custom coder to BigQuerySource does not need to work, and we need the
+    We need this because providing a custom coder to BigQuerySource does not seem to work, and we need the
     output from that source to be a JSONDict so that our JSONCoder will get used to serialize the rows
-
-    So we just do a read from a source that returns dict and then convert to JSONDict
+    when we pass data from one node to another in Beam (because json is faster and better then pickle)
     """
 
     def __init__(self, source):

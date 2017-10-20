@@ -4,6 +4,7 @@ import itertools as it
 from collections import defaultdict
 import time
 import logging
+import warnings
 import six
 
 import apache_beam as beam
@@ -57,13 +58,17 @@ class WriteToDatePartitionedFiles(PTransform):
                                              header=header)
 
     def expand(self, pcoll):
-        return (
+        pcoll = (
             pcoll
             | core.WindowInto(window.GlobalWindows())
             | beam.ParDo(DateShardDoFn(shards_per_day=self.shards_per_day))
             | beam.GroupByKey()   # group by day and shard
-            | beam.io.Write(self._sink).with_output_types(str)
         )
+        with warnings.catch_warnings():
+            # suppress a spurious warning generated within beam.io.Write.  This warning is annoying but harmless
+            warnings.filterwarnings(action="ignore", message="Using fallback coder for typehint: <type 'NoneType'>")
+
+            return pcoll | beam.io.Write(self._sink).with_output_types(str)
 
 
 @typehints.with_input_types(T)
