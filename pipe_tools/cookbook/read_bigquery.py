@@ -44,7 +44,7 @@ class MyPipelineOptions(StandardOptions, TypeOptions, GoogleCloudOptions):
                             default=cls.DEFAULT_SHARDS_PER_DAY
                             )
         parser.add_argument('--query',
-                            help='Query to run',
+                            help='Query to run.  Use @file.sql to read from a file.  Required',
                             required=True,
                             action=ReadFileAction
                             )

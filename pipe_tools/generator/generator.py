@@ -28,7 +28,7 @@ class MessageGenerator():
             ts += self.increment
 
     def bigquery_schema(self):
-        return "mmsi:INTEGER,timestamo:TIMESTAMP,idx:INTEGER"
+        return "mmsi:INTEGER,timestamp:TIMESTAMP,idx:INTEGER"
 
 
 @typehints.with_output_types(JSONDict)

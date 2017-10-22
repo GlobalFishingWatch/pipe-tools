@@ -9,7 +9,8 @@ DEPENDENCIES = [
     "nose",
     "ujson",
     "pytz",
-    "udatetime"
+    "udatetime",
+    "six"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency

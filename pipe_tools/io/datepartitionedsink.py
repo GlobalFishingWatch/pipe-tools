@@ -28,6 +28,7 @@ from apache_beam.typehints import Tuple, KV
 
 T = typehints.TypeVariable('T')
 
+DEFAULT_SHARDS_PER_DAY=3
 
 @typehints.with_input_types(JSONDict)
 @typehints.with_output_types(str)
@@ -41,13 +42,13 @@ class WriteToDatePartitionedFiles(PTransform):
                  file_path_prefix,
                  file_name_suffix='',
                  append_trailing_newlines=True,
-                 shards_per_day=3,
+                 shards_per_day=None,
                  shard_name_template=None,
                  coder=JSONDictCoder(),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
 
-        self.shards_per_day = shards_per_day
+        self.shards_per_day = shards_per_day or DEFAULT_SHARDS_PER_DAY
 
         self._sink = DatePartitionedFileSink(file_path_prefix,
                                              file_name_suffix=file_name_suffix,
@@ -78,9 +79,8 @@ class DateShardDoFn(beam.DoFn):
     Apply date and shard number
     """
 
-    def __init__(self, shards_per_day=1):
-        assert shards_per_day > 0
-        self.shards_per_day = shards_per_day
+    def __init__(self, shards_per_day=None):
+        self.shards_per_day = shards_per_day or DEFAULT_SHARDS_PER_DAY
         self.shard_counter = 0
 
     def start_bundle(self):

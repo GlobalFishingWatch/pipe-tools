@@ -79,11 +79,14 @@ def run(args=None):
     print "Writing {} messages to {}".format(options.count, options.output_file_prefix)
 
     pipeline = build_pipeline(options)
-    job = pipeline.run()
+    result = pipeline.run()
+    result.wait_until_finish()
 
+    return 0 if result.state == 'DONE' else 1
 
 # call run() with the args from the command line
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
-    run(args=sys.argv[1:])
+    result = run(args=sys.argv[1:])
+    sys.exit(result)
 

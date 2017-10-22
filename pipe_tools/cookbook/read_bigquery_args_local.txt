@@ -1,5 +1,4 @@
 --runner=DirectRunner
---setup-file=setup.py
 --output-file-prefix=gs://BUCKET/pipe_tools_cookbook/output/read_from_bigquery/shard
 --project=PROJECT
 --query=@query-8k-rows-2-fields.sql
