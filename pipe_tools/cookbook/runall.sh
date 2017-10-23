@@ -48,6 +48,15 @@ python read_write_bigquery.py \
     --query=@query-8k-rows-2-fields.sql \
     --schema=mmsi:INTEGER,timestamp:TIMESTAMP
 
+SAMPLE_TABLE=${PROJECT}:${TEMP_DATASET}.8k_rows_2_fields
+DEST_TABLE=${PROJECT}:${TEMP_DATASET}.schema_autodetect_dest
+bq query --max_rows=0 --destination_table=${SAMPLE_TABLE}  < query-8k-rows-2-fields.sql
+python schema_autodetect.py \
+    --runner=DirectRunner \
+    --source-table=${SAMPLE_TABLE} \
+    --dest-table=${DEST_TABLE} \
+    --project=${PROJECT}
+bq query "select count(*) as record_count from [${DEST_TABLE}] LIMIT 100"
 
 echo "Cleaning up temp gcs storage"
 echo "  ${GCS_TEMP}"
