@@ -115,3 +115,7 @@ class BigQueryWrapper(beam.io.gcp.bigquery.BigQueryWrapper):
             jobId=job_id, projectId=project_id)
         return self.client.jobs.Get(request)
 
+    def get_table_schema(self, project_id, dataset_id, table_id):
+        table = self._get_table(project_id, dataset_id, table_id)
+        return table.schema
+
