@@ -1,0 +1,14 @@
+{
+  "name": "automation",
+  "version": "1.0.0",
+  "description": "dataflow automation test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "googleapis": "^22.2.0"
+  }
+}
