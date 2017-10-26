@@ -54,7 +54,7 @@ case $1 in
     python -m copyfile --input=${INPUT} --output=${OUTPUT} --code=local
     echo 'Done.'
     gsutil ls ${OUTPUT}*
-    gsutil cat ${OUTPUT}*
+#    gsutil cat ${OUTPUT}*
     ;;
 
   remote)
@@ -72,7 +72,7 @@ case $1 in
 
     echo 'Done.'
     gsutil ls ${OUTPUT}*
-    gsutil cat ${OUTPUT}*
+#    gsutil cat ${OUTPUT}*
     ;;
 
   maketemplate)
@@ -100,14 +100,23 @@ case $1 in
         --gcs-location ${TEMPLATE_DIR}/copyfile \
         --parameters input=${INPUT},output=${OUTPUT},code=runtemplate \
         --region ${REGION}
+    echo 'Done.'
     ;;
 
   deployfn)
+    echo 'Deploying copyfile to Cloud Functions'
     gcloud beta functions deploy copyFiles --stage-bucket ${BUCKET_NAME} --trigger-http
+    echo 'Done.'
     ;;
 
   triggerfn)
-    gcloud beta functions call copyFiles
+    echo 'Triggering copyfile in Cloud Functions.  This launches the pipeline template in dataflow'
+    INPUT=${WORK_DIR}/cloud-fn/sample-in.txt
+    gsutil cp ${SAMPLE_DATA} ${INPUT}
+    CONFIG_TEMPLATE='{"projectId":"%s","bucketName":"%s","jobName":"%s"}'
+    DATA=`printf "${CONFIG_TEMPLATE}" $PROJECT $BUCKET_NAME $JOB_NAME-cloud-fn`
+    gcloud beta functions call copyFiles --data ${DATA}
+    echo 'Done.'
     ;;
 
   *)

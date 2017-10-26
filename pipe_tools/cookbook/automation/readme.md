@@ -2,9 +2,11 @@
 
 Demonstrates a basic automation setup for a dataflow pipeline
 
-## Setup
-Assuming you have pipe-tools already installed
+The Cloud Functions implementation is based in this example:
+https://dzone.com/articles/triggering-dataflow-pipelines-with-cloud-functions
 
+
+## Setup
 To run these examples, you will need to set up sone configuration settings and install some 
 node.js dependencies.  First 
 
@@ -27,4 +29,20 @@ the `copyfiles.sh` script controls everything.  Run it with no parameters for a 
 ```console
 ./copyfiles.sh
 ```
+
+To view the Cloud Function logs after you run `./copyfiles.sh triggerfn`, use this
+
+```
+gcloud beta functions logs read
+```
+
+## Development
+
+For local testing of Cloud Functions, use the emulator
+
+https://github.com/GoogleCloudPlatform/cloud-functions-emulator
+
+Note that you can only test Http triggers this way, so bacground functions that are pubsub or gcs triggered, you 
+ will have to make an http-triggered version of it to test
+ 
 

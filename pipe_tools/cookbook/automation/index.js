@@ -10,9 +10,42 @@
 
 const google = require('googleapis');
 
-exports.copyFiles = function copyFiles (req, res) {
-    res.send('Triggering copyFile.');
 
+exports.copyFiles = function copyFiles (req, res) {
+    const projectId=req.body.projectId;
+    const bucketName=req.body.bucketName;
+
+    const dryRun = (typeof req.body.dryRun === 'undefined') ? false : req.body.dryRun;
+
+    const inputFile = `gs://${bucketName}/pipe-tools-cookbook/automation/cloud-fn/sample-in.txt`;
+    const outputFilePrefix = `gs://${bucketName}/pipe-tools-cookbook/automation/cloud-fn/sample-out`;
+    const code = 'cloud-fn';
+    const jobName = (typeof req.body.jobName === 'undefined') ? 'copyfile-cloud-fn' : req.body.jobName;;
+    const jobTemplate = `gs://${bucketName}/pipe-tools-cookbook/automation/templates/copyfile`;
+
+    if (typeof projectId === 'undefined' || typeof bucketName === 'undefined') {
+        res.send ('Error:  projectId and bucketName are required.')
+        return
+    }
+
+    res.send(
+`
+
+Triggering copyFile
+
+dryRun: ${dryRun}
+projectId: ${projectId}
+template: ${jobTemplate}
+jobName: ${jobName}
+input: ${inputFile}
+output: ${outputFilePrefix}
+code: ${code}
+`
+    );
+
+    if (dryRun) {
+        return
+    }
     google.auth.getApplicationDefault(function(err, authClient) {
         if (err) {
             throw err;
@@ -28,15 +61,15 @@ exports.copyFiles = function copyFiles (req, res) {
             auth: authClient
         });
         dataflow.projects.templates.create({
-            projectId: 'world-fishing-827',
+            projectId: projectId,
             resource: {
                 parameters: {
-                    input: 'gs://scratch-automation/pipe-tools-cookbook/automation/cloud-fn/sample-in.txt',
-                    output: 'gs://scratch-automation/pipe-tools-cookbook/automation/cloud-fn/sample-out',
-                    code: 'cloud-fn'
+                    input: inputFile,
+                    output: outputFilePrefix,
+                    code: code
                 },
-                jobName: 'copyfile-cloud_fn',
-                gcsPath: 'gs://scratch-automation/pipe-tools-cookbook/automation/templates/copyfile'
+                jobName: jobName,
+                gcsPath: jobTemplate
             }
         }, function(err, response) {
             if (err) {
