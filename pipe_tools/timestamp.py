@@ -137,7 +137,6 @@ def rfc3339strFromTimestamp(ts):
 def timestampFromRfc3339str(s):
     return timestampFromUdatetime(udatetime.from_string(s))
 
-
 @typehints.with_input_types(JSONDict)
 @typehints.with_output_types(JSONDict)
 class ParseBeamBQStrTimestampDoFn(beam.DoFn):

@@ -32,7 +32,7 @@ class WriteToBigQueryDatePartitioned(WriteToDatePartitionedFiles):
 
     def __init__(self, temp_gcs_location, table, dataset=None, project=None, schema=None,
                  create_disposition=BigQueryDisposition.CREATE_IF_NEEDED,
-                 write_disposition=BigQueryDisposition.WRITE_APPEND,
+                 write_disposition=BigQueryDisposition.WRITE_EMPTY,
                  test_client=None, temp_shards_per_day=None):
 
         super(WriteToBigQueryDatePartitioned, self).__init__(
@@ -52,7 +52,7 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
 
     def __init__(self, temp_gcs_location, table, dataset=None, project=None, schema=None,
                  create_disposition=BigQueryDisposition.CREATE_IF_NEEDED,
-                 write_disposition=BigQueryDisposition.WRITE_APPEND,
+                 write_disposition=BigQueryDisposition.WRITE_EMPTY,
                  test_client=None, temp_shards_per_day=0):
 
         self.temp_shards_per_day = temp_shards_per_day or DEFAULT_TEMP_SHARDS_PER_DAY
