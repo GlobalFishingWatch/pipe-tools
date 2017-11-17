@@ -64,3 +64,26 @@ class TestDatePartitionedSink():
             expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
                                    '-00000-of-00001', file_name_suffix) for i in range(100)]
             assert_that(result, equal_to(expected))
+
+
+
+    def test_no_template(self, temp_dir):
+
+        file_path_base = temp_dir
+        file_name_prefix = 'shard'
+        file_path_prefix = pp.join(file_path_base, file_name_prefix)
+        file_name_suffix = '.json'
+
+        messages = list(self._sample_data(stringify=True))
+
+        with _TestPipeline() as p:
+            messages = (
+                p
+                | beam.Create(messages)
+            )
+
+            result = messages | WriteToIdPartitionedFiles(file_path_prefix, file_name_suffix, shard_name_template='')
+            # Of the form ..../shardN.json
+            expected = ['%s%s%s' % (pp.join(file_path_base, file_name_prefix), str(i),
+                                    file_name_suffix) for i in range(100)]
+            assert_that(result, equal_to(expected))

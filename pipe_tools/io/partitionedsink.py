@@ -39,17 +39,18 @@ class PartitionedFileSink(FileBasedSink):
                  coder=JSONDictCoder(),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
-
+        self._do_sharding = not (shard_name_template == '')
         super(PartitionedFileSink, self).__init__(
             file_path_prefix,
             file_name_suffix=file_name_suffix,
             num_shards=0,
-            shard_name_template=shard_name_template,
+            shard_name_template=None,
             coder=coder,
             mime_type='text/plain',
             compression_type=compression_type)
         self._append_trailing_newlines = append_trailing_newlines
         self._header = header
+
 
     def _encode_key(self, key):
         raise NotImplementedError()
@@ -103,9 +104,8 @@ class PartitionedFileSink(FileBasedSink):
         file_path_prefix = self.file_path_prefix.get()
         file_name_suffix = self.file_name_suffix.get()
 
-        # split the file_path_prefix into path and filename componenets.  We will insert
-        # a directory for each day
-
+        # split the file_path_prefix into path and filename componenets.  If we are sharding,
+        # We will insert a directory for each day. Otherwise, we append sharding key to prefix.
         file_path, file_name_prefix = pp.split(file_path_prefix)
 
         # first group the shard paths by key
@@ -114,17 +114,31 @@ class PartitionedFileSink(FileBasedSink):
             shards_by_key[key].append(shard)
 
         for key, shards in six.iteritems(shards_by_key):
-            dest_path = pp.join(file_path, self._encode_key(key))
-            shards = sorted(shards)
-            num_shards = len(shards)
+            encoded_key = self._encode_key(key)
+            if self._do_sharding:
+                dest_path = pp.join(file_path, encoded_key)
 
-            for shard_num, source_shard in enumerate(shards):
+                shards = sorted(shards)
+                num_shards = len(shards)
+
+                for shard_num, source_shard in enumerate(shards):
+                    dest_file_name = ''.join([
+                            file_name_prefix, self.shard_name_format % dict(
+                                shard_num=shard_num, num_shards=num_shards), file_name_suffix
+                        ])
+
+                    dest_shard = pp.join(dest_path, dest_file_name)
+            else:
+                dest_path = file_path
+                [source_shard] = shards
+
                 dest_file_name = ''.join([
-                    file_name_prefix, self.shard_name_format % dict(
-                        shard_num=shard_num, num_shards=num_shards), file_name_suffix
-                ])
+                            file_name_prefix, encoded_key, file_name_suffix
+                    ])
                 dest_shard = pp.join(dest_path, dest_file_name)
-                yield (source_shard, dest_shard)
+
+            yield (source_shard, dest_shard)
+
 
     # Use a thread pool for renaming operations.
     @staticmethod

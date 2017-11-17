@@ -53,7 +53,7 @@ class WriteToIdPartitionedFiles(PTransform):
             pcoll
             | core.WindowInto(window.GlobalWindows())
             | beam.ParDo(IdShardDoFn(shards_per_id=self.shards_per_id))
-            | beam.GroupByKey()   # group by day and shard
+            | beam.GroupByKey()   # group by id and shard
         )
         with warnings.catch_warnings():
             # suppress a spurious warning generated within beam.io.Write.  This warning is annoying but harmless
