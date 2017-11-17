@@ -29,6 +29,35 @@ from apache_beam.typehints import Tuple, KV
 T = typehints.TypeVariable('T')
 
 
+@typehints.with_input_types(JSONDict)
+@typehints.with_output_types(str)
+class WritePartitionedFiles(PTransform):
+    """
+    Write the incoming pcoll to partioned files. Must be subclassed
+    and __init__ implements. The attributes:
+
+        _sink: a subclass of PartitionedFileSink
+        _sharder: a do-function that produces ((key, shard), value) tuples
+
+    must be created in the __init__. See datepartionsink.py and keypartitionsink.py
+    for examples.
+
+    """
+
+    def expand(self, pcoll):
+        pcoll = (
+            pcoll
+            | core.WindowInto(window.GlobalWindows())
+            | beam.ParDo(self._sharder)
+            | beam.GroupByKey()   # group by id and shard
+        )
+        with warnings.catch_warnings():
+            # suppress a spurious warning generated within beam.io.Write.  This warning is annoying but harmless
+            warnings.filterwarnings(action="ignore", message="Using fallback coder for typehint: <type 'NoneType'>")
+
+            return pcoll | beam.io.Write(self._sink).with_output_types(str)
+
+
 class PartitionedFileSink(FileBasedSink):
 
     def __init__(self,

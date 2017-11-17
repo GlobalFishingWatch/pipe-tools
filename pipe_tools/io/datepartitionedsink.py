@@ -1,6 +1,7 @@
 import random
 import warnings
 
+from .partitionedsink import WritePartitionedFiles
 from .partitionedsink import PartitionedFileSink
 from .partitionedsink import T
 
@@ -21,9 +22,8 @@ from apache_beam.typehints import Tuple, KV
 DEFAULT_SHARDS_PER_DAY = 3
 
 
-@typehints.with_input_types(JSONDict)
-@typehints.with_output_types(str)
-class WriteToDatePartitionedFiles(PTransform):
+
+class WriteToDatePartitionedFiles(WritePartitionedFiles):
     """
     Write the incoming pcoll to files partitioned by date.  The date is taken from the
     TimestampedValue associated with each element.
@@ -49,18 +49,8 @@ class WriteToDatePartitionedFiles(PTransform):
                                              compression_type=compression_type,
                                              header=header)
 
-    def expand(self, pcoll):
-        pcoll = (
-            pcoll
-            | core.WindowInto(window.GlobalWindows())
-            | beam.ParDo(DateShardDoFn(shards_per_day=self.shards_per_day))
-            | beam.GroupByKey()   # group by day and shard
-        )
-        with warnings.catch_warnings():
-            # suppress a spurious warning generated within beam.io.Write.  This warning is annoying but harmless
-            warnings.filterwarnings(action="ignore", message="Using fallback coder for typehint: <type 'NoneType'>")
+        self._sharder = DateShardDoFn(shards_per_day=self.shards_per_day)
 
-            return pcoll | beam.io.Write(self._sink).with_output_types(str)
 
 
 

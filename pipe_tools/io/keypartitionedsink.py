@@ -1,6 +1,7 @@
 import random
 import warnings
 
+from .partitionedsink import WritePartitionedFiles
 from .partitionedsink import PartitionedFileSink
 from .partitionedsink import T
 
@@ -20,15 +21,14 @@ from apache_beam.typehints import Tuple, KV
 DEFAULT_SHARDS_PER_ID = 1
 
 
-@typehints.with_input_types(JSONDict)
-@typehints.with_output_types(str)
-class WriteToIdPartitionedFiles(PTransform):
+class WriteToKeyPartitionedFiles(WritePartitionedFiles):
     """
     Write the incoming pcoll to files partitioned by Id.  The id is taken from the
     Id field of each element.
 
     """
     def __init__(self,
+                 key,
                  file_path_prefix,
                  file_name_suffix='',
                  append_trailing_newlines=True,
@@ -40,7 +40,7 @@ class WriteToIdPartitionedFiles(PTransform):
 
         self.shards_per_id = shards_per_id or DEFAULT_SHARDS_PER_ID
 
-        self._sink = IdPartitionedFileSink(file_path_prefix,
+        self._sink = KeyPartitionedFileSink(file_path_prefix,
                                              file_name_suffix=file_name_suffix,
                                              append_trailing_newlines=append_trailing_newlines,
                                              shard_name_template=shard_name_template,
@@ -48,30 +48,21 @@ class WriteToIdPartitionedFiles(PTransform):
                                              compression_type=compression_type,
                                              header=header)
 
-    def expand(self, pcoll):
-        pcoll = (
-            pcoll
-            | core.WindowInto(window.GlobalWindows())
-            | beam.ParDo(IdShardDoFn(shards_per_id=self.shards_per_id))
-            | beam.GroupByKey()   # group by id and shard
-        )
-        with warnings.catch_warnings():
-            # suppress a spurious warning generated within beam.io.Write.  This warning is annoying but harmless
-            warnings.filterwarnings(action="ignore", message="Using fallback coder for typehint: <type 'NoneType'>")
+        self._sharder = KeyShardDoFn(key, shards_per_id=self.shards_per_id)
 
-            return pcoll | beam.io.Write(self._sink).with_output_types(str)
 
 
 
 
 @typehints.with_input_types(T)
 @typehints.with_output_types(KV[Tuple[str,int],T])
-class IdShardDoFn(beam.DoFn):
+class KeyShardDoFn(beam.DoFn):
     """
     Apply id and shard number
     """
 
-    def __init__(self, shards_per_id=None):
+    def __init__(self, key, shards_per_id=None):
+        self.key = key
         self.shards_per_id = shards_per_id or DEFAULT_SHARDS_PER_ID
         self.shard_counter = 0
 
@@ -79,7 +70,7 @@ class IdShardDoFn(beam.DoFn):
         self.shard_counter = random.randint(0, self.shards_per_id - 1)
 
     def process(self, element):
-        element_id = str(element['id'])
+        element_id = str(element[self.key])
         shard = self.shard_counter
 
         self.shard_counter += 1
@@ -90,8 +81,8 @@ class IdShardDoFn(beam.DoFn):
         yield ((element_id, shard), element)
 
 
-class IdPartitionedFileSink(PartitionedFileSink):
-    def _encode_key(self, id):
+class KeyPartitionedFileSink(PartitionedFileSink):
+    def _encode_key(self, key):
         """convert an id to a string representation"""
-        return str(id)
+        return key
 
