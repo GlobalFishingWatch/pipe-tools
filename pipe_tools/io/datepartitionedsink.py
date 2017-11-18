@@ -78,7 +78,6 @@ class DateShardDoFn(beam.DoFn):
         if self.shard_counter >= self.shards_per_day:
             self.shard_counter -= self.shards_per_day
         assert isinstance(element, JSONDict), 'element must be a JSONDict'
-        # get timestamp from TimestampedValue
         yield ((date, shard), element)
 
 

@@ -123,9 +123,9 @@ class PartitionedFileSink(FileBasedSink):
         generator that take a list of (key, shard_path:string) pairs and
         yields a stream of (source:string, dest:string) pairs
 
-        where the input is a timestamp and full patch to a temporary shard file
+        where the input is a shard key and full path to a temporary shard file
         and the output is the temp shard file as source and the matching
-        file shard file path as dest
+        destination shard file path as dest
         """
         def key_fn(k):
             return k[0]
@@ -133,8 +133,8 @@ class PartitionedFileSink(FileBasedSink):
         file_path_prefix = self.file_path_prefix.get()
         file_name_suffix = self.file_name_suffix.get()
 
-        # split the file_path_prefix into path and filename componenets.  If we are sharding,
-        # We will insert a directory for each day. Otherwise, we append sharding key to prefix.
+        # split the file_path_prefix into path and filename components.  If we are sharding,
+        # we will insert a directory for each key. Otherwise, we append sharding key to prefix.
         file_path, file_name_prefix = pp.split(file_path_prefix)
 
         # first group the shard paths by key
@@ -169,7 +169,7 @@ class PartitionedFileSink(FileBasedSink):
             yield (source_shard, dest_shard)
 
 
-    # Use a thread pool for renaming operations.
+    # Use a thread pool for creating dirs.
     @staticmethod
     def _create_output_dir(path):
         try:
@@ -254,6 +254,7 @@ class PartitionedFileSink(FileBasedSink):
             # May have already been removed.
             pass
 
+
 class PartitionedFileSinkWriter(FileBasedSinkWriter):
     """The writer for PartitionedFileSink.
     """
@@ -266,7 +267,7 @@ class PartitionedFileSinkWriter(FileBasedSinkWriter):
     def write(self, value):
         # value is created by ShardDoFn.process(), so it contains a partition key
         # and it is grouped by key, so it contains a stream of rows to write
-        # because we are grouped by shard, all the rows for a particular shard come in a single
+        # Because we are grouped by shard, all the rows for a particular shard come in a single
         # call to write().  Therefore we open, write and close all in one go
 
         (partition_key, shard), rows = value

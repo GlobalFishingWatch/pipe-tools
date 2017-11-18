@@ -39,7 +39,7 @@ class TestKeyPartitionedSink():
                 | beam.Create(messages)
             )
 
-            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shards_per_id=1)
+            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shards_per_key=1)
             expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
                                    '-00000-of-00001', file_name_suffix) for i in range(100)]
             assert_that(result, equal_to(expected))
@@ -59,7 +59,7 @@ class TestKeyPartitionedSink():
                 | beam.Create(messages)
             )
 
-            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shards_per_id=1)
+            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shards_per_key=1)
             expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
                                    '-00000-of-00001', file_name_suffix) for i in range(100)]
             assert_that(result, equal_to(expected))
@@ -80,7 +80,7 @@ class TestKeyPartitionedSink():
                 | beam.Create(messages)
             )
 
-            result = messages | WriteToKeyPartitionedFiles('boa', file_path_prefix, file_name_suffix, shards_per_id=1)
+            result = messages | WriteToKeyPartitionedFiles('boa', file_path_prefix, file_name_suffix, shards_per_key=1)
             expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
                                    '-00000-of-00001', file_name_suffix) for i in range(100)]
             assert_that(result, equal_to(expected))
