@@ -11,37 +11,36 @@ from apache_beam import core
 from apache_beam.transforms import window
 from apache_beam.io.filesystem import CompressionTypes
 
-from pipe_tools.timestamp import SECONDS_IN_DAY
-from pipe_tools.timestamp import datetimeFromTimestamp
 from pipe_tools.coders import JSONDictCoder
 from pipe_tools.coders import JSONDict
+
 from apache_beam import typehints
 from apache_beam.typehints import Tuple, KV
 
 
-DEFAULT_SHARDS_PER_DAY = 3
+DEFAULT_SHARDS_PER_KEY = 1
 
 
-
-class WriteToDatePartitionedFiles(WritePartitionedFiles):
+class WriteToKeyPartitionedFiles(WritePartitionedFiles):
     """
-    Write the incoming pcoll to files partitioned by date.  The date is taken from the
-    TimestampedValue associated with each element.
+    Write the incoming pcoll to files partitioned by a string key.  The key is taken from the
+    a field in each element specified by 'key'.
 
     """
     def __init__(self,
+                 key_field,
                  file_path_prefix,
                  file_name_suffix='',
                  append_trailing_newlines=True,
-                 shards_per_day=None,
+                 shards_per_key=DEFAULT_SHARDS_PER_KEY,
                  shard_name_template=None,
                  coder=JSONDictCoder(),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
 
-        self.shards_per_day = shards_per_day or DEFAULT_SHARDS_PER_DAY
+        self.shards_per_key = shards_per_key or DEFAULT_SHARDS_PER_KEY
 
-        self._sink = DatePartitionedFileSink(file_path_prefix,
+        self._sink = KeyPartitionedFileSink(file_path_prefix,
                                              file_name_suffix=file_name_suffix,
                                              append_trailing_newlines=append_trailing_newlines,
                                              shard_name_template=shard_name_template,
@@ -49,44 +48,40 @@ class WriteToDatePartitionedFiles(WritePartitionedFiles):
                                              compression_type=compression_type,
                                              header=header)
 
-        self._sharder = DateShardDoFn(shards_per_day=self.shards_per_day)
+        self._sharder = KeyShardDoFn(key_field, shards_per_key=self.shards_per_key)
 
 
 
 
 
 @typehints.with_input_types(T)
-@typehints.with_output_types(KV[Tuple[int,int],T])
-class DateShardDoFn(beam.DoFn):
+@typehints.with_output_types(KV[Tuple[str,int],T])
+class KeyShardDoFn(beam.DoFn):
     """
-    Apply date and shard number
+    Apply id and shard number
     """
 
-    def __init__(self, shards_per_day=None):
-        self.shards_per_day = shards_per_day or DEFAULT_SHARDS_PER_DAY
+    def __init__(self, key, shards_per_key=None):
+        self.key = key
+        self.shards_per_key = shards_per_key or DEFAULT_SHARDS_PER_KEY
         self.shard_counter = 0
 
     def start_bundle(self):
-        self.shard_counter = random.randint(0, self.shards_per_day - 1)
+        self.shard_counter = random.randint(0, self.shards_per_key - 1)
 
-    def process(self, element, timestamp=beam.DoFn.TimestampParam):
-        # get the timestamp at the start of the day that contains this element
-        date = (int(timestamp) / SECONDS_IN_DAY) * SECONDS_IN_DAY
+    def process(self, element):
+        element_key = str(element[self.key])
         shard = self.shard_counter
 
         self.shard_counter += 1
-        if self.shard_counter >= self.shards_per_day:
-            self.shard_counter -= self.shards_per_day
+        if self.shard_counter >= self.shards_per_key:
+            self.shard_counter -= self.shards_per_key
         assert isinstance(element, JSONDict), 'element must be a JSONDict'
-        yield ((date, shard), element)
+        yield ((element_key, shard), element)
 
 
-class DatePartitionedFileSink(PartitionedFileSink):
-    DATE_FORMAT='%Y-%m-%d'
+class KeyPartitionedFileSink(PartitionedFileSink):
+    def _encode_key(self, key):
+        """convert an id to a string representation"""
+        return key
 
-    def _date_str(self, date_ts):
-        """convert a timestamp to a string date representation"""
-        return datetimeFromTimestamp(date_ts).strftime(self.DATE_FORMAT)
-
-    def _encode_key(self, date_ts):
-        return self._date_str(date_ts)

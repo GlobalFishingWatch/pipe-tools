@@ -1,5 +1,5 @@
 from datepartitionedsink import WriteToDatePartitionedFiles
 from datepartitionedsink import DatePartitionedFileSink
-from datepartitionedsink import DatePartitionedFileSinkWriter
+from partitionedsink import PartitionedFileSinkWriter as DatePartitionedFileSinkWriter
 from bqdatepartitionedsink import WriteToBigQueryDatePartitioned
 from bqdatepartitionedsink import BigQueryDatePartitionedSink
