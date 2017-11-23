@@ -28,7 +28,7 @@ class TestDatePartitionedSink():
             yield JSONDict(mmsi=1, timestamp= ts)
             ts += increment
 
-    @pytest.mark.parametrize("shards_per_day", [1,2])
+    @pytest.mark.parametrize("shards_per_day", [1,2,3])
     def test_as_pipeline(self, temp_dir, shards_per_day):
 
         file_path_base = temp_dir
