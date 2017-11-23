@@ -83,6 +83,10 @@ class DateShardDoFn(beam.DoFn):
 
 class DatePartitionedFileSink(PartitionedFileSink):
     DATE_FORMAT='%Y-%m-%d'
-    def _encode_key(self, date_ts):
+
+    def _date_str(self, date_ts):
         """convert a timestamp to a string date representation"""
         return datetimeFromTimestamp(date_ts).strftime(self.DATE_FORMAT)
+
+    def _encode_key(self, date_ts):
+        return self._date_str(self, date_ts)
