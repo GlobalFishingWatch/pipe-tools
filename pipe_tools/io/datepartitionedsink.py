@@ -89,4 +89,4 @@ class DatePartitionedFileSink(PartitionedFileSink):
         return datetimeFromTimestamp(date_ts).strftime(self.DATE_FORMAT)
 
     def _encode_key(self, date_ts):
-        return self._date_str(self, date_ts)
+        return self._date_str(date_ts)
