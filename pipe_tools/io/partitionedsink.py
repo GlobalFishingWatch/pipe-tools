@@ -149,7 +149,6 @@ class PartitionedFileSink(FileBasedSink):
 
                 shards = sorted(shards)
                 num_shards = len(shards)
-
                 for shard_num, source_shard in enumerate(shards):
                     dest_file_name = ''.join([
                             file_name_prefix, self.shard_name_format % dict(
@@ -157,6 +156,7 @@ class PartitionedFileSink(FileBasedSink):
                         ])
 
                     dest_shard = pp.join(dest_path, dest_file_name)
+                    yield (source_shard, dest_shard)
             else:
                 dest_path = file_path
                 [source_shard] = shards
@@ -166,7 +166,7 @@ class PartitionedFileSink(FileBasedSink):
                     ])
                 dest_shard = pp.join(dest_path, dest_file_name)
 
-            yield (source_shard, dest_shard)
+                yield (source_shard, dest_shard)
 
 
     # Use a thread pool for creating dirs.
