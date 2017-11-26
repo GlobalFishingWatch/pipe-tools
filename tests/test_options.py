@@ -1,8 +1,9 @@
+import pytest
 import posixpath as pp
 
 
 from pipe_tools.options import LoggingOptions
-
+from pipe_tools.options import validate_options
 
 class TestOptions:
     def test_logging_options(self):
@@ -21,3 +22,10 @@ class TestOptions:
             log_data = f.read()
 
         assert log_file in log_data
+
+    def test_validate_options(self):
+        args=['--help']
+        with pytest.raises(SystemExit) as e:
+            validate_options(args, LoggingOptions)
+        assert e.type == SystemExit
+        assert e.value.code == 0
