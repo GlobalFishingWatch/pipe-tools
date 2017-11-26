@@ -3,7 +3,7 @@ import argparse
 
 class ReadFileAction(argparse.Action):
     """
-    argparse action that will optionallt read the value of an option from a file
+    argparse action that will optionally read the value of an option from a file
 
     Ecxample usage:
 
