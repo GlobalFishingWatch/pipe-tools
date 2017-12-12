@@ -232,15 +232,18 @@ class PartitionedFileSink(FileBasedSink):
             num_shards, len(batches), num_threads)
         start_time = time.time()
 
-        util.run_using_threadpool(self._create_output_dir, unique_dest_dirs, num_threads)
+        if unique_dest_dirs:
+            # Fix #18 run_using_threadpool raises if you pass in an empty list of inputs
+            # so if we don't have any work to do, then just skip it
+            util.run_using_threadpool(self._create_output_dir, unique_dest_dirs, num_threads)
 
-        exception_batches = util.run_using_threadpool(self._rename_batch, batches, num_threads)
+            exception_batches = util.run_using_threadpool(self._rename_batch, batches, num_threads)
 
-        all_exceptions = [e for exception_batch in exception_batches for e in exception_batch]
+            all_exceptions = [e for exception_batch in exception_batches for e in exception_batch]
 
-        if all_exceptions:
-            raise Exception('Encountered exceptions in finalize_write: %s',
-                            all_exceptions)
+            if all_exceptions:
+                raise Exception('Encountered exceptions in finalize_write: %s',
+                                all_exceptions)
 
         for _, final_name in path_pairs:
             yield final_name
