@@ -17,92 +17,39 @@ class TestKeyPartitionedSink():
     Tests for KeyPartitionedSink and related classes
     """
 
-    def _sample_data(self, stringify, key='id'):
-        count = 100
+    def _sample_data(self, stringify, key='id', count=100):
         for vessel_id in xrange(count):
             if stringify:
                 vessel_id = str(vessel_id)
             yield JSONDict(**{key: vessel_id})
 
-    def test_as_pipeline_numbers(self, temp_dir):
-
+    @pytest.mark.parametrize("stringify,key,count,shard_name_template", [
+        (False, 'id', 100, None),
+        (True, 'id', 100, None),
+        (True, 'boa', 100, None),
+        (True, 'id', 100, ''),
+        (True, 'id', 0, ''),
+    ])
+    def test_expected_shard_files(self, temp_dir, stringify, key, count, shard_name_template):
         file_path_base = temp_dir
         file_name_prefix = 'shard'
         file_path_prefix = pp.join(file_path_base, file_name_prefix)
         file_name_suffix = '.json'
 
-        messages = list(self._sample_data(stringify=False))
+        messages = list(self._sample_data(stringify=stringify, key=key, count=count))
 
         with _TestPipeline() as p:
-            messages = (
-                p
-                | beam.Create(messages)
-            )
+            messages = p | beam.Create(messages)
 
-            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shards_per_key=1)
-            expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
-                                   '-00000-of-00001', file_name_suffix) for i in range(100)]
-            assert_that(result, equal_to(expected))
+            result = messages | WriteToKeyPartitionedFiles(key, file_path_prefix, file_name_suffix,
+                                                           shard_name_template=shard_name_template)
 
-    def test_as_pipeline_strings(self, temp_dir):
+            if shard_name_template is None:
+                expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
+                                   '-00000-of-00001', file_name_suffix) for i in range(count)]
+            else:
+                # Of the form ..../shardN.json
+                expected = ['%s%s%s' % (pp.join(file_path_base, file_name_prefix), str(i),
+                                        file_name_suffix) for i in range(count)]
 
-        file_path_base = temp_dir
-        file_name_prefix = 'shard'
-        file_path_prefix = pp.join(file_path_base, file_name_prefix)
-        file_name_suffix = '.json'
-
-        messages = list(self._sample_data(stringify=True))
-
-        with _TestPipeline() as p:
-            messages = (
-                p
-                | beam.Create(messages)
-            )
-
-            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shards_per_key=1)
-            expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
-                                   '-00000-of-00001', file_name_suffix) for i in range(100)]
-            assert_that(result, equal_to(expected))
-
-
-    def test_other_key(self, temp_dir):
-
-        file_path_base = temp_dir
-        file_name_prefix = 'shard'
-        file_path_prefix = pp.join(file_path_base, file_name_prefix)
-        file_name_suffix = '.json'
-
-        messages = list(self._sample_data(stringify=True, key='boa'))
-
-        with _TestPipeline() as p:
-            messages = (
-                p
-                | beam.Create(messages)
-            )
-
-            result = messages | WriteToKeyPartitionedFiles('boa', file_path_prefix, file_name_suffix, shards_per_key=1)
-            expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
-                                   '-00000-of-00001', file_name_suffix) for i in range(100)]
-            assert_that(result, equal_to(expected))
-
-
-    def test_no_template(self, temp_dir):
-
-        file_path_base = temp_dir
-        file_name_prefix = 'shard'
-        file_path_prefix = pp.join(file_path_base, file_name_prefix)
-        file_name_suffix = '.json'
-
-        messages = list(self._sample_data(stringify=True))
-
-        with _TestPipeline() as p:
-            messages = (
-                p
-                | beam.Create(messages)
-            )
-
-            result = messages | WriteToKeyPartitionedFiles('id', file_path_prefix, file_name_suffix, shard_name_template='')
-            # Of the form ..../shardN.json
-            expected = ['%s%s%s' % (pp.join(file_path_base, file_name_prefix), str(i),
-                                    file_name_suffix) for i in range(100)]
             assert_that(result, equal_to(expected))
