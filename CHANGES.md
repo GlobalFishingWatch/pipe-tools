@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.1.1 - (2017-12-15)
+--------------------
+
+* ['#16'](https://github.com/GlobalFishingWatch/pipe-tools/pull/16)
+  Update cli options handling an help display to be compatible with PipelineOptions model
+  Standardized uuid generator with GFW namespace
+
+* ['#18'](https://github.com/GlobalFishingWatch/pipe-tools/pull/18)
+  bug fix for writing partitioned files with 0 rows
+  
 0.1.1 - (2017-11-24)
 --------------------
 
