@@ -17,8 +17,11 @@ def as_timestamp(d):
 
     return: float   seconds since epoch (unix timestamp)
     """
-    if isinstance(d,datetime):
-        return timestampFromDatetime(pytz.UTC.localize(d))
+    if d is None:
+        return None
+    elif isinstance(d,datetime):
+        return timestampFromDatetime(pytz.UTC.localize(d) if d.tzinfo is None else d)
+        # return timestampFromDatetime(pytz.UTC.localize(d))
     elif isinstance(d, (float, int, Timestamp)):
         return float(d)
     elif isinstance(d, basestring):
