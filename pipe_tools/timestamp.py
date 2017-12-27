@@ -165,7 +165,9 @@ class ParseBeamBQStrTimestampDoFn(beam.DoFn):
 
     def process(self, element):
         for f in self._fields:
-            element[f] = timestampFromBeamBQStr(element[f])
+            v = element.get(f)
+            if v is not None:
+                element[f] = timestampFromBeamBQStr(v)
         yield element
 
 
@@ -195,7 +197,9 @@ class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
     def process(self, element):
         new_element = JSONDict(element)
         for f in self.fields:
-            new_element[f] = timestampFromBeamBQStr(element[f])
+            v = new_element.get(f)
+            if v is not None:
+                new_element[f] = timestampFromBeamBQStr(v)
         yield new_element
 
 
