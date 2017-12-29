@@ -30,19 +30,19 @@ class TestTimestampTools():
 
 
     def test_ParseBeamBQStrTimestamp(self):
-        r = range(0,10)
-        source = [{'timestamp':beambqstrFromTimestamp(t)} for t in r]
-        expected = [{'timestamp':t} for t in range(0,10)]
+        r = range(10)
+        source = [{'timestamp':beambqstrFromTimestamp(t)} for t in r] + [{'timestamp':None}]
+        expected = [{'timestamp':t} for t in r]+ [{'timestamp':None}]
         timestamp_fields = 'timestamp'
 
         with _TestPipeline() as p:
             fields = p | beam.Create(source).with_output_types(JSONDict)
-
-            # Note: Must do 'safe' first, because 'fast' modifies the elements in place so
-            # running 'safe' after will get the modified elements instead of the originals
-
             safe = fields | beam.ParDo(SafeParseBeamBQStrTimestampDoFn(fields=timestamp_fields))
+
+            assert_that(safe, equal_to(expected), label='safe')
+
+        with _TestPipeline() as p:
+            fields = p | beam.Create(source).with_output_types(JSONDict)
             fast = fields | beam.ParDo(ParseBeamBQStrTimestampDoFn(fields=timestamp_fields))
 
-            assert_that(fast, equal_to(expected))
-            assert_that(safe, equal_to(expected), label='safe')
+            assert_that(fast, equal_to(expected), label='fast')
