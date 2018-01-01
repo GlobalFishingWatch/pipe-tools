@@ -1,7 +1,13 @@
 Changelog
 =========
 
-0.1.1 - (2017-12-15)
+0.1.3 - (2018-01-01)
+--------------------
+
+* ['#23'](https://github.com/GlobalFishingWatch/pipe-tools/pull/23)
+  bugfixes for timestamp handling edgecases
+
+0.1.2 - (2017-12-15)
 --------------------
 
 * ['#16'](https://github.com/GlobalFishingWatch/pipe-tools/pull/16)
