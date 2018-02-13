@@ -17,7 +17,8 @@ DEPENDENCIES = [
     "ujson",
     "pytz",
     "udatetime",
-    "python-dateutil"
+    "python-dateutil",
+    "newlinejson"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency
