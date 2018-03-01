@@ -1,11 +1,12 @@
 import argparse
+import json
 
 
 class ReadFileAction(argparse.Action):
     """
     argparse action that will optionally read the value of an option from a file
 
-    Ecxample usage:
+    Example usage:
 
     parser.add_argument(
     '--dest_schema',
@@ -27,3 +28,14 @@ class LoadFromFileAction (argparse.Action):
         with values as f:
             parser.parse_args(f.read().split(), namespace)
 
+
+class ReadJSONAction(argparse.Action):
+    def __call__(self, parser, namespace, values, _):
+
+        if (values.startswith('@')):
+            with open(values[1:], 'r') as f:
+                value = json.load(f)
+        else:
+            value = json.loads(values)
+
+        setattr(namespace, self.dest, value)
