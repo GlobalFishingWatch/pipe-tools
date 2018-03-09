@@ -16,7 +16,7 @@ class DataFlowDirectRunnerHook(DataFlowHook):
                 command.append("--" + attr + "=" + value)
         return command
 
-class DataFlowDirectunnerOperator(DataFlowPythonOperator):
+class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
     def execute_direct_runner(self, context):
         bucket_helper = GoogleCloudBucketHelper(
             self.gcp_conn_id, self.delegate_to)
@@ -41,5 +41,5 @@ class DataFlowDirectunnerOperator(DataFlowPythonOperator):
         if self.options['runner'] == 'DirectRunner':
             return self.execute_direct_runner(context=context)
         else:
-            return super(DataFlowDirectunnerOperator, self).execute(context=context)
+            return super(DataFlowDirectRunnerOperator, self).execute(context=context)
 
