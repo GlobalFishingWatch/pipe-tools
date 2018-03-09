@@ -1,3 +1,5 @@
+import re
+
 from airflow.contrib.operators.dataflow_operator import DataFlowPythonOperator
 from airflow.contrib.operators.dataflow_operator import GoogleCloudBucketHelper
 from airflow.contrib.hooks.gcp_dataflow_hook import DataFlowHook
@@ -16,6 +18,7 @@ class DataFlowDirectRunnerHook(DataFlowHook):
                 command.append("--" + attr + "=" + value)
         return command
 
+
 class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
     def execute_direct_runner(self, context):
         bucket_helper = GoogleCloudBucketHelper(
@@ -29,7 +32,7 @@ class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
         formatted_options = {camel_to_snake(key): dataflow_options[key]
                              for key in dataflow_options}
         hook = DataFlowDirectRunnerHook(gcp_conn_id=self.gcp_conn_id,
-                            delegate_to=self.delegate_to)
+                                        delegate_to=self.delegate_to)
         hook.start_python_dataflow(
             self.task_id, formatted_options,
             self.py_file, self.py_options)
@@ -42,4 +45,3 @@ class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
             return self.execute_direct_runner(context=context)
         else:
             return super(DataFlowDirectRunnerOperator, self).execute(context=context)
-
