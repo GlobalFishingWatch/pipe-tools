@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import date
 import pytz
 from dateutil.parser import parse as dateutil_parse
 
@@ -22,6 +23,8 @@ def as_timestamp(d):
     elif isinstance(d,datetime):
         return timestampFromDatetime(pytz.UTC.localize(d) if d.tzinfo is None else d)
         # return timestampFromDatetime(pytz.UTC.localize(d))
+    elif isinstance(d, date):
+        return timestampFromDatetime(pytz.UTC.localize(datetime.combine(d, datetime.min.time())))
     elif isinstance(d, (float, int, Timestamp)):
         return float(d)
     elif isinstance(d, basestring):

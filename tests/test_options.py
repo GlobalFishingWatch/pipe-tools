@@ -1,9 +1,14 @@
 import pytest
 import posixpath as pp
+import json
 
+from apache_beam.options.pipeline_options import PipelineOptions
 
 from pipe_tools.options import LoggingOptions
 from pipe_tools.options import validate_options
+from pipe_tools.options import ReadJSONAction
+
+
 
 class TestOptions:
     def test_logging_options(self):
@@ -29,3 +34,28 @@ class TestOptions:
             validate_options(args, LoggingOptions)
         assert e.type == SystemExit
         assert e.value.code == 0
+
+
+class JSONOptions(PipelineOptions):
+    @classmethod
+    def _add_argparse_args(cls, parser):
+        parser.add_argument(
+            '--json_arg',
+            action=ReadJSONAction)
+
+class TestJSONOptions:
+    def test_read_json_action(self):
+        d = dict(a = 1)
+        args=['--json_arg=%s' % json.dumps(d)]
+        options = JSONOptions(args)
+        assert options.json_arg == d
+
+    def test_read_json_file_action(self, temp_dir):
+        d = dict(a = 1)
+        filename = pp.join(temp_dir, 'test.json')
+        with open(filename, 'w') as f:
+            json.dump(d, f)
+
+        args = ['--json_arg=@%s' % filename]
+        options = JSONOptions(args)
+        assert options.json_arg == d
