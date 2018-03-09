@@ -18,7 +18,8 @@ DEPENDENCIES = [
     "pytz",
     "udatetime",
     "python-dateutil",
-    "newlinejson"
+    "newlinejson",
+    "apache-airflow"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency
