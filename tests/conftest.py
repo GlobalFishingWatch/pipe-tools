@@ -23,10 +23,10 @@ def pytest_collection_modifyitems(config, items):
 
 TESTS_DIR = os.path.dirname(os.path.realpath(__file__))
 TEST_DATA_DIR = posixpath.join(TESTS_DIR, 'data')
-TEST_AIRFLOW_HOME = posixpath.join(TESTS_DIR, 'airflow_home')
-
-os.environ['AIRFLOW_HOME'] = TEST_AIRFLOW_HOME
-os.environ['AIRFLOW__CORE__UNIT_TEST_MODE'] = 'True'
+# TEST_AIRFLOW_HOME = posixpath.join(TESTS_DIR, 'airflow_home')
+#
+# os.environ['AIRFLOW_HOME'] = TEST_AIRFLOW_HOME
+# os.environ['AIRFLOW__CORE__UNIT_TEST_MODE'] = 'True'
 
 
 
@@ -36,11 +36,6 @@ os.environ['AIRFLOW__CORE__UNIT_TEST_MODE'] = 'True'
 @pytest.fixture(scope='session')
 def test_data_dir():
     return TEST_DATA_DIR
-
-
-@pytest.fixture(scope='session')
-def test_airflow_home():
-    return TEST_AIRFLOW_HOME
 
 
 # creates a temp dir which is automatically deleted after each test function that uses it

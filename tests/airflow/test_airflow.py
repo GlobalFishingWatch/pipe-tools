@@ -1,6 +1,4 @@
 import pytest
-import posixpath as pp
-import os
 from datetime import datetime
 from datetime import timedelta
 
@@ -16,16 +14,13 @@ INTERVAL = timedelta(hours=24)
 
 
 @pytest.fixture(scope='module')
-def airflow_db(test_airflow_home):
-    db = pp.join(test_airflow_home, 'unittests.db')
-    if os.path.exists(db): os.remove(db)
+def airflow_init_db():
     configuration.load_test_config()
     initdb()
-    return db
 
 
 @pytest.fixture(scope='function')
-def dag(airflow_db):
+def dag(airflow_init_db):
     return DAG(
         'airflow_test_dag',
         default_args={
