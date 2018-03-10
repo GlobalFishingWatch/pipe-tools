@@ -104,3 +104,5 @@ ENV/
 
 .idea/
 .pytest_cache/
+
+tests/airflow_home/

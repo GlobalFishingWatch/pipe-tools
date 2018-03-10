@@ -7,9 +7,6 @@ cache:
 python:
 - 2.7
 
-services:
-  - mysql
-  
 install:
 - pip install -e .
 

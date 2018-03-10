@@ -1,10 +1,13 @@
 import pytest
+import posixpath as pp
+import os
 from datetime import datetime
 from datetime import timedelta
 
 from airflow import configuration, DAG
 from airflow.utils.state import State
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.utils.db import initdb
 
 from pipe_tools.airflow.operators.python_operator import ExecutionDateBranchOperator
 
@@ -12,9 +15,17 @@ DEFAULT_DATE = datetime(2018, 1, 1)
 INTERVAL = timedelta(hours=24)
 
 
-@pytest.fixture(scope='function')
-def dag(request):
+@pytest.fixture(scope='module')
+def airflow_db(test_airflow_home):
+    db = pp.join(test_airflow_home, 'unittests.db')
+    if os.path.exists(db): os.remove(db)
     configuration.load_test_config()
+    initdb()
+    return db
+
+
+@pytest.fixture(scope='function')
+def dag(airflow_db):
     return DAG(
         'airflow_test_dag',
         default_args={
@@ -23,6 +34,7 @@ def dag(request):
         schedule_interval='@daily')
 
 
+@pytest.mark.filterwarnings('ignore:Skipping unsupported ALTER:UserWarning')
 class TestAirflow:
 
     def test_ExecutionDateBranchOperator(self, dag):
