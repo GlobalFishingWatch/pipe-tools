@@ -1,6 +1,7 @@
 import pytest
 from datetime import datetime
 from datetime import timedelta
+import os
 
 from airflow import configuration, DAG
 from airflow.utils.state import State
@@ -13,8 +14,10 @@ DEFAULT_DATE = datetime(2018, 1, 1)
 INTERVAL = timedelta(hours=24)
 
 
+# NB:  See the commennts on conftest.py about how AIRFLOW_HOME gets initialized
+
 @pytest.fixture(scope='module')
-def airflow_init_db():
+def airflow_init_db(airflow_home):
     configuration.load_test_config()
     initdb()
 

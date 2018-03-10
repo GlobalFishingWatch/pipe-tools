@@ -20,7 +20,6 @@ DEPENDENCIES = [
     "python-dateutil",
     "newlinejson",
     "apache-airflow",
-    "mysql-python"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency
