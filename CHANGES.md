@@ -4,9 +4,9 @@ Changelog
 0.1.4 - (2018-03-11)
 --------------------
 
-* ['#27'](https://github.com/GlobalFishingWatch/pipe-tools/pull/27)
+* [#27](https://github.com/GlobalFishingWatch/pipe-tools/pull/27)
   GCP source and sink classes for generic GCP read/write
-* ['#31'](https://github.com/GlobalFishingWatch/pipe-tools/pull/31)
+* [#31](https://github.com/GlobalFishingWatch/pipe-tools/pull/31)
   Common tools for airflow dags
  
  
