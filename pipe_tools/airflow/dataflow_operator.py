@@ -4,6 +4,7 @@ from airflow.contrib.operators.dataflow_operator import DataFlowPythonOperator
 from airflow.contrib.operators.dataflow_operator import GoogleCloudBucketHelper
 from airflow.contrib.hooks.gcp_dataflow_hook import DataFlowHook
 from airflow.contrib.hooks.gcp_dataflow_hook import _Dataflow
+from airflow.utils.decorators import apply_defaults
 
 
 class DataFlowDirectRunnerHook(DataFlowHook):
@@ -20,6 +21,23 @@ class DataFlowDirectRunnerHook(DataFlowHook):
 
 
 class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
+
+    @apply_defaults
+    def __init__(self, *args, **kwargs):
+
+        super(DataFlowDirectRunnerOperator, self).__init__(*args, **kwargs)
+
+        self.pool = self.pool or self._default_pool
+
+    @property
+    def _is_direct_runner(self):
+        runner = self.options.get('runner', self.dataflow_default_options.get('runner'))
+        return runner == 'DirectRunner'
+
+    @property
+    def _default_pool(self):
+        return 'local_high_cpu' if self._is_direct_runner else 'dataflow'
+
     def execute_direct_runner(self, context):
         bucket_helper = GoogleCloudBucketHelper(
             self.gcp_conn_id, self.delegate_to)
@@ -40,8 +58,7 @@ class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
         pass
 
     def execute(self, context):
-        """Execute the python dataflow job."""
-        if self.options['runner'] == 'DirectRunner':
+        if self._is_direct_runner:
             return self.execute_direct_runner(context=context)
         else:
             return super(DataFlowDirectRunnerOperator, self).execute(context=context)

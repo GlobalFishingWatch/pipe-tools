@@ -9,6 +9,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.db import initdb
 
 from pipe_tools.airflow.operators.python_operator import ExecutionDateBranchOperator
+from pipe_tools.airflow.dataflow_operator import DataFlowDirectRunnerOperator
 
 DEFAULT_DATE = datetime(2018, 1, 1)
 INTERVAL = timedelta(hours=24)
@@ -68,3 +69,18 @@ class TestAirflow:
         ]
         actual = [(ti.task_id, ti.state) for ti in dr.get_task_instances()]
         assert set(expected) == set(actual)
+
+    @pytest.mark.parametrize("options,expected", [
+        (None, 'dataflow'),
+        ({}, 'dataflow'),
+        ({'runner':'DataflowRunner'}, 'dataflow'),
+        ({'runner': 'DirectRunner'}, 'local_high_cpu'),
+    ])
+    def test_DataFlowDirectRunnerOperator_pool(self, options, expected, dag):
+        op = DataFlowDirectRunnerOperator(
+            task_id='dataflow_direct',
+            options=options,
+            py_file='dummy.py',
+            dag=dag
+        )
+        assert op.pool == expected

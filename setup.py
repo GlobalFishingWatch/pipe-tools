@@ -22,6 +22,10 @@ DEPENDENCIES = [
     "apache-airflow",
 ]
 
+AIRFLOW_DEPENDENCIES = [
+    "google-api-python-client"
+]
+
 # Frozen dependencies for the google cloud dataflow dependency
 DATAFLOW_PINNED_DEPENDENCIES = [
     "apache-beam==2.1.0",
@@ -93,7 +97,7 @@ setup(
     author_email=email,
     description="A python utility library for apache beam and bigquery",
     include_package_data=True,
-    install_requires=DEPENDENCIES + DATAFLOW_PINNED_DEPENDENCIES,
+    install_requires=DEPENDENCIES + AIRFLOW_DEPENDENCIES + DATAFLOW_PINNED_DEPENDENCIES,
     keywords='AIS GIS remote sensing',
     license="Apache 2.0",
     long_description=readme,
