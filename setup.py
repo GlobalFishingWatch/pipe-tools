@@ -70,6 +70,12 @@ DATAFLOW_PINNED_DEPENDENCIES = [
     "urllib3==1.22",
 ]
 
+SCRIPTS = [
+    'bin/pipe-tools-utils',
+    'bin/xdaterange',
+]
+
+
 with codecs.open('README.md', encoding='utf-8') as f:
     readme = f.read().strip()
 
@@ -105,7 +111,8 @@ setup(
     packages=find_packages(exclude=['test*.*', 'tests']),
     url=source,
     version=version,
-    zip_safe=True
+    zip_safe=True,
+    scripts=SCRIPTS
 )
 
 

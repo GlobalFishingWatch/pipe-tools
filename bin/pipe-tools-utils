@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -e
+
+# on osx, use gdate which is installed with `brew install coreutils`
+case "$OSTYPE" in
+  darwin*)  DATE=gdate ;;
+  *)        DATE=date ;;
+esac
+
+
+# valid_date str_date
+#
+# returns yyyy-mm-dd for any valid datetime representation
+# and returns an error code for invalid dates
+#
+valid_date() {
+  local d
+  d=$(${DATE} +%Y-%m-%d -d "$1") || return $?
+  echo $d
+}
+
+
+# date_range(from_date, to_date)
+# return a list for dates from from_date to to_date, inclusive
+#
+# Usage
+# for date in $(date_range 2015-01-01 2015-01-04); do
+#    echo $date
+# done
+date_range() {
+    local d
+    local end
+
+    d=$(valid_date "$1") || return $?
+    end=$d
+    if [ ! -z "${2}" ]; then
+        end=$(valid_date "$2") || return $?
+    fi
+
+    echo $d
+    while [[ "$d" < "${end}" ]]; do
+      d=$(${DATE} -I -d "$d + 1 day")
+      echo $d
+    done
+}
+
+
+# yyyymmdd(date)
+# formats a date as YYYYMMDD
+yyyymmdd() {
+    echo $(${DATE} +%Y%m%d -d $1)
+
+}
