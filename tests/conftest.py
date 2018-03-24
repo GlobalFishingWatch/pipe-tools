@@ -51,9 +51,9 @@ def temp_dir(request):
 # you import from airflow will end up importing configuration.py
 #
 # In configuration.py, it reads the environment variable AIRFLW_HOME at the time of import, and if
-# there is no airflow configuraion at that location or the environment variable is not set, then it
+# there is no airflow configuration at that location or the environment variable is not set, then it
 # initializes everything.  This means that the only way to influence where AIRFLOW_HOME goes is to set
-# the environment varialble BEFORE configuration.py is imported.
+# the environment variable BEFORE configuration.py is imported.
 #
 # In pytest_configure() below we create a temp dir and set AIRFLOW_HOME to point to that.  This method
 # gets called before the individual test files (like test_airflow.py) are imported, so this allows us
