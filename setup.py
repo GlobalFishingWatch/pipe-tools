@@ -20,6 +20,7 @@ DEPENDENCIES = [
     "python-dateutil",
     "newlinejson",
     "apache-airflow",
+    "pandas-gbq",
 ]
 
 AIRFLOW_DEPENDENCIES = [

@@ -7,16 +7,16 @@ from airflow import configuration, DAG
 from airflow.utils.state import State
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.db import initdb
-
+from airflow.models import Variable
 from pipe_tools.airflow.operators.python_operator import ExecutionDateBranchOperator
 from pipe_tools.airflow.dataflow_operator import DataFlowDirectRunnerOperator
+from pipe_tools.airflow.models import DagFactory
 
 DEFAULT_DATE = datetime(2018, 1, 1)
 INTERVAL = timedelta(hours=24)
 
 
 # NB:  See the commennts on conftest.py about how AIRFLOW_HOME gets initialized
-
 @pytest.fixture(scope='module')
 def airflow_init_db(airflow_home):
     configuration.load_test_config()
@@ -31,6 +31,30 @@ def dag(airflow_init_db):
             'owner': 'airflow',
             'start_date': DEFAULT_DATE},
         schedule_interval='@daily')
+
+
+@pytest.fixture(scope='function')
+def dag_config(airflow_init_db):
+    variable_name='pipe_test'
+    value = dict(
+        project_id='test_project',
+        pipeline_dataset='dataset',
+        pipeline_bucket='bucket',
+        foo='bar',
+    )
+    Variable.set(variable_name, value, serialize_json=True)
+    return variable_name
+
+
+@pytest.fixture(scope='function')
+def dag_factory(airflow_init_db):
+    class _Test_DagFactory(DagFactory):
+        def build(self, dag_id):
+            with DAG('airflow_test_dag', default_args=self.default_args, schedule_interval=self.schedule_interval) as dag:
+                op = DummyOperator(task_id='dummy')
+                dag >> op
+
+    return _Test_DagFactory
 
 
 @pytest.mark.filterwarnings('ignore:Skipping unsupported ALTER:UserWarning')
@@ -84,3 +108,6 @@ class TestAirflow:
             dag=dag
         )
         assert op.pool == expected
+
+    def test_DagFactory(self, dag_factory, dag_config):
+        dag = dag_factory(pipeline=dag_config).build('test_dag')
