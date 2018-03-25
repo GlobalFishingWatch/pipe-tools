@@ -1,6 +1,18 @@
 Changelog
 =========
 
+
+0.1.5 - (2018-03-25)
+--------------------
+
+* [#34](https://github.com/GlobalFishingWatch/pipe-tools/pull/34)
+  Automatically set pool based on the runner in DataFlowDirectRunnerOperator
+* [#36](https://github.com/GlobalFishingWatch/pipe-tools/pull/36)
+  Utility bash scripts - xdaterange
+* [#37](https://github.com/GlobalFishingWatch/pipe-tools/pull/37)
+  DagFactory
+  
+  
 0.1.4 - (2018-03-11)
 --------------------
 
