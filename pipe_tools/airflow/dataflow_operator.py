@@ -24,16 +24,27 @@ class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
 
     @apply_defaults
     def __init__(self, *args, **kwargs):
-
-        dataflow_options = {}
-        dataflow_options.update (kwargs.get('dataflow_default_options') or {})
-        dataflow_options.update (kwargs.get('options') or {})
-
-        self._is_direct_runner = dataflow_options.get('runner') == 'DirectRunner'
-        default_pool = 'local_high_cpu' if self._is_direct_runner else 'dataflow'
-        kwargs['pool'] = kwargs.get('pool', default_pool)
+        self._pool = None
 
         super(DataFlowDirectRunnerOperator, self).__init__(*args, **kwargs)
+
+
+    @property
+    def _is_direct_runner(self):
+        runner = self.options.get('runner', self.dataflow_default_options.get('runner'))
+        return runner == 'DirectRunner'
+
+    @property
+    def _default_pool(self):
+        return 'local_high_cpu' if self._is_direct_runner else 'dataflow'
+
+    @property
+    def pool(self):
+        return self._pool if self._pool else self._default_pool
+
+    @pool.setter
+    def pool(self, v):
+        self._pool = v
 
     def execute_direct_runner(self, context):
         bucket_helper = GoogleCloudBucketHelper(
