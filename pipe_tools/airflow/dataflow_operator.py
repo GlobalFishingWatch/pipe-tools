@@ -36,7 +36,7 @@ class DataFlowDirectRunnerOperator(DataFlowPythonOperator):
 
     @property
     def _default_pool(self):
-        return 'local_high_cpu' if self._is_direct_runner else 'dataflow'
+        return 'local-cpu' if self._is_direct_runner else 'dataflow'
 
     @property
     def pool(self):
