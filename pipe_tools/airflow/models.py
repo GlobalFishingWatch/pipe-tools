@@ -37,11 +37,15 @@ class DagFactory(object):
     def format_bigquery_table(self, project, dataset, table, date=None):
         return "{}:{}.{}".format(project, dataset, self.format_date_sharded_table(table, date))
 
-    def source_table_parts(self, date=None):
+    def source_tables(self):
         tables = self.config.get('source_tables') or self.config.get('source_table')
         assert tables
+        return tables.split(',')
 
-        for table in tables.split(','):
+    def source_table_parts(self, date=None):
+        tables = self.source_tables()
+
+        for table in tables:
             yield dict(
                 project=self.config['project_id'],
                 dataset=self.config['source_dataset'],

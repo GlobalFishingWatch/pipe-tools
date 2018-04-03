@@ -98,7 +98,7 @@ class TestAirflow:
         (None, 'dataflow'),
         ({}, 'dataflow'),
         ({'runner':'DataflowRunner'}, 'dataflow'),
-        ({'runner': 'DirectRunner'}, 'local_high_cpu'),
+        ({'runner': 'DirectRunner'}, 'local-cpu'),
     ])
     def test_DataFlowDirectRunnerOperator_pool(self, options, expected, dag):
         op = DataFlowDirectRunnerOperator(
