@@ -33,5 +33,5 @@ elif [[ $# -eq 1 ]]
 then
     $CMD
 else
-    for dt in $(date_range ${DATE_RANGE//,/ }); do echo $dt; done | xargs -P 8 -I{} $CMD {} "${@:3}"
+    for dt in $(date_range ${DATE_RANGE//,/ }); do echo $dt; done | xargs -P 4 -I{} $CMD {} "${@:3}"
 fi
