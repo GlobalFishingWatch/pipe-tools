@@ -20,6 +20,8 @@ class DagFactory(object):
             return '{{ ds_nodash }}'
         elif self.schedule_interval == '@monthly':
             return '{last_day_of_month_nodash}'.format(**self.config)
+        elif self.schedule_interval == '@yearly':
+            return '{last_day_of_year_nodash}'.format(**self.config)
         else:
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
@@ -28,6 +30,8 @@ class DagFactory(object):
             return '{{ ds }}', '{{ ds }}'
         elif self.schedule_interval == '@monthly':
             return self.config['first_day_of_month'], self.config['last_day_of_month']
+        elif self.schedule_interval == '@yearly':
+            return self.config['first_day_of_year'], self.config['last_day_of_year']
         else:
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
@@ -70,7 +74,8 @@ class DagFactory(object):
             poke_interval=10,  # check every 10 seconds for a minute
             timeout=60,
             retries=24 * 7,  # retry once per hour for a week
-            retry_delay=timedelta(minutes=60)
+            retry_delay=timedelta(minutes=60),
+            retry_exponential_backoff=False
         )
 
     def source_table_sensors(self, dag):

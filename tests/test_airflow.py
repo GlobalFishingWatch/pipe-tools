@@ -6,6 +6,7 @@ import os
 from airflow import configuration, DAG
 from airflow.utils.state import State
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
 from airflow.utils.db import initdb
 from airflow.models import Variable
 from pipe_tools.airflow.operators.python_operator import ExecutionDateBranchOperator
@@ -53,12 +54,28 @@ def dag_factory(airflow_init_db):
             with DAG('airflow_test_dag', default_args=self.default_args, schedule_interval=self.schedule_interval) as dag:
                 op = DummyOperator(task_id='dummy')
                 dag >> op
+            return dag
 
     return _Test_DagFactory
 
 
+
 @pytest.mark.filterwarnings('ignore:Skipping unsupported ALTER:UserWarning')
 class TestAirflow:
+
+    @staticmethod
+    def assert_expected_task(task_id, expected, templated, dag):
+        def assert_expected(**kwargs):
+            expected = kwargs['templates_dict']['expected']
+            actual = kwargs['templates_dict']['actual']
+            assert expected == actual
+
+        return PythonOperator(
+            task_id=task_id,
+            provide_context=True,
+            python_callable=assert_expected,
+            templates_dict={'expected': expected, 'actual': templated},
+            dag=dag)
 
     def test_ExecutionDateBranchOperator(self, dag):
         date_branches = [
@@ -111,3 +128,43 @@ class TestAirflow:
 
     def test_DagFactory(self, dag_factory, dag_config):
         dag = dag_factory(pipeline=dag_config).build('test_dag')
+
+    @pytest.mark.parametrize("schedule_interval,expected", [
+        ('@daily', '20180101'),
+        ('@monthly', '20180131'),
+        ('@yearly', '20181231'),
+    ])
+    def test_schedule_interval_dates(self, schedule_interval, expected, dag_factory, dag_config):
+        factory = dag_factory(pipeline=dag_config, schedule_interval=schedule_interval)
+        dag = factory.build('interval_test_dag')
+        task = self.assert_expected_task(
+            task_id='%s%s' % (schedule_interval.replace('@', ''), expected),
+            expected=expected,
+            templated=factory.source_sensor_date_nodash(),
+            dag=dag
+        )
+        task.run(start_date=DEFAULT_DATE, end_date=DEFAULT_DATE)
+
+    @pytest.mark.parametrize("key,expected", [
+        ('ds', '2018-01-01'),
+        ('ds_nodash', '20180101'),
+        ('first_day_of_month', '2018-01-01'),
+        ('last_day_of_month', '2018-01-31'),
+        ('first_day_of_month_nodash', '20180101'),
+        ('last_day_of_month_nodash', '20180131'),
+        ('first_day_of_year', '2018-01-01'),
+        ('last_day_of_year', '2018-12-31'),
+        ('first_day_of_year_nodash', '20180101'),
+        ('last_day_of_year_nodash', '20181231'),
+    ])
+    def test_config(self, key, expected, dag_factory, dag_config):
+        factory = dag_factory(pipeline=dag_config)
+        dag = factory.build('config_test_dag')
+        task = self.assert_expected_task(
+            task_id=key,
+            expected=expected,
+            templated=factory.config[key],
+            dag=dag
+        )
+        task.run(start_date=DEFAULT_DATE, end_date=DEFAULT_DATE)
+
