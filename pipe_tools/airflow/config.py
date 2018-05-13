@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import math
 
 from airflow.models import Variable
 
@@ -37,6 +38,9 @@ def pipeline_end_date(config):
         return None
 
 
+INITIAL_RETRY_DELAY = 2 * 60
+
+
 def default_args(config):
     args = {
         'owner': 'airflow',
@@ -46,8 +50,12 @@ def default_args(config):
         'email': ['airflow@globalfishingwatch.org'],
         'email_on_failure': False,
         'email_on_retry': False,
-        'retries': 2,
-        'retry_delay': timedelta(minutes=5),
+
+        # retry with binary exponential backoff for 24 - 48 hours
+        'retry_exponential_backoff': True,
+        'retry_delay': timedelta(seconds=INITIAL_RETRY_DELAY),
+        'retries': int(math.log(24 * 60 * 60 / INITIAL_RETRY_DELAY, 2)) + 1,
+
         'project_id': config['project_id'],
         'dataset_id': config['pipeline_dataset'],
         'bucket': config['pipeline_bucket'],
