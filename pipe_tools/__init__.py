@@ -3,7 +3,7 @@ Tools for running dataflow jobs using bigquery
 """
 
 
-__version__ = '0.1.5a'
+__version__ = '0.1.5b'
 __author__ = 'Paul Woods'
 __email__ = 'paul@globalfishingwatch.org'
 __source__ = 'https://github.com/GlobalFishingWatch/pipe-tools'
