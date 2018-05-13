@@ -20,6 +20,8 @@ class DagFactory(object):
             return '{{ ds_nodash }}'
         elif self.schedule_interval == '@monthly':
             return '{last_day_of_month_nodash}'.format(**self.config)
+        elif self.schedule_interval == '@yearly':
+            return '{last_day_of_year_nodash}'.format(**self.config)
         else:
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
@@ -28,6 +30,8 @@ class DagFactory(object):
             return '{{ ds }}', '{{ ds }}'
         elif self.schedule_interval == '@monthly':
             return self.config['first_day_of_month'], self.config['last_day_of_month']
+        elif self.schedule_interval == '@yearly':
+            return self.config['first_day_of_year'], self.config['last_day_of_year']
         else:
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 

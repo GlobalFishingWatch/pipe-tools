@@ -15,6 +15,10 @@ def load_config (variable_name):
     config['last_day_of_month'] = '{{ (execution_date.replace(day=1) + macros.dateutil.relativedelta.relativedelta(months=1, days=-1)).strftime("%Y-%m-%d") }}'
     config['first_day_of_month_nodash'] = '{{ execution_date.replace(day=1).strftime("%Y%m%d") }}'
     config['last_day_of_month_nodash'] = '{{ (execution_date.replace(day=1) + macros.dateutil.relativedelta.relativedelta(months=1, days=-1)).strftime("%Y%m%d") }}'
+    config['first_day_of_year'] = '{{ execution_date.replace(day=1, month=1).strftime("%Y-%m-%d") }}'
+    config['last_day_of_year'] = '{{ (execution_date.replace(day=1, month=1) + macros.dateutil.relativedelta.relativedelta(years=1, days=-1)).strftime("%Y-%m-%d") }}'
+    config['first_day_of_year_nodash'] = '{{ execution_date.replace(day=1, month=1).strftime("%Y%m%d") }}'
+    config['last_day_of_year_nodash'] = '{{ (execution_date.replace(day=1, month=1) + macros.dateutil.relativedelta.relativedelta(years=1, days=-1)).strftime("%Y%m%d") }}'
     return config
 
 
