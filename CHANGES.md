@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.1.6 - (2018-05-13)
+--------------------
+
+* [#40](https://github.com/GlobalFishingWatch/pipe-tools/pull/40)
+  Change parallelization in xdaterange from 8 to 4
+* [#44](https://github.com/GlobalFishingWatch/pipe-tools/pull/44)
+  Airflow dag factory supports @yearly schedule interval and exponential backoff on retry
+
 
 0.1.5 - (2018-03-25)
 --------------------
