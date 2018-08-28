@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.1.7 - (2018-08-27)
+--------------------
+
+* [#46](https://github.com/GlobalFishingWatch/pipe-tools/pull/46)
+  Pin version of airflow to 1.9.0
+
+
 0.1.6 - (2018-05-13)
 --------------------
 
