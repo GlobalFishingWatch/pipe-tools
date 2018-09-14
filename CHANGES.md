@@ -4,7 +4,7 @@ Changelog
 0.2.0 - (2018-09-13)
 --------------------
 
-* [#47](https://github.com/GlobalFishingWatch/pipe-tools/pull/46)
+* [#47](https://github.com/GlobalFishingWatch/pipe-tools/pull/47)
   * Fixes `DagFactory` config initialization order so that the `extra_config` is taken into account before `default_args` processing.
   * Adds a new `base_config` argument to `DagFactory` initialization that is used as the base configuration. The configuration that's loaded from the airflow variables is merged into this base config, and then the `extra_config` is merged afterwards.
 
