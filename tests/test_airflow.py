@@ -36,7 +36,7 @@ def dag(airflow_init_db):
 
 @pytest.fixture(scope='function')
 def dag_config(airflow_init_db):
-    variable_name='pipe_test'
+    variable_name = 'pipe_test'
     value = dict(
         project_id='test_project',
         pipeline_dataset='dataset',
@@ -57,7 +57,6 @@ def dag_factory(airflow_init_db):
             return dag
 
     return _Test_DagFactory
-
 
 
 @pytest.mark.filterwarnings('ignore:Skipping unsupported ALTER:UserWarning')
@@ -84,7 +83,8 @@ class TestAirflow:
             (DEFAULT_DATE + INTERVAL, None, 'after'),
         ]
 
-        op = ExecutionDateBranchOperator(date_branches=date_branches, task_id='date_branch', dag=dag)
+        op = ExecutionDateBranchOperator(
+            date_branches=date_branches, task_id='date_branch', dag=dag)
 
         before = DummyOperator(task_id='before', dag=dag)
         before.set_upstream(op)
@@ -114,7 +114,7 @@ class TestAirflow:
     @pytest.mark.parametrize("options,expected", [
         (None, 'dataflow'),
         ({}, 'dataflow'),
-        ({'runner':'DataflowRunner'}, 'dataflow'),
+        ({'runner': 'DataflowRunner'}, 'dataflow'),
         ({'runner': 'DirectRunner'}, 'local-cpu'),
     ])
     def test_DataFlowDirectRunnerOperator_pool(self, options, expected, dag):
@@ -135,7 +135,8 @@ class TestAirflow:
         ('@yearly', '20181231'),
     ])
     def test_schedule_interval_dates(self, schedule_interval, expected, dag_factory, dag_config):
-        factory = dag_factory(pipeline=dag_config, schedule_interval=schedule_interval)
+        factory = dag_factory(pipeline=dag_config,
+                              schedule_interval=schedule_interval)
         dag = factory.build('interval_test_dag')
         task = self.assert_expected_task(
             task_id='%s%s' % (schedule_interval.replace('@', ''), expected),
@@ -146,6 +147,7 @@ class TestAirflow:
         task.run(start_date=DEFAULT_DATE, end_date=DEFAULT_DATE)
 
     @pytest.mark.parametrize("key,expected", [
+        # Generated config entries
         ('ds', '2018-01-01'),
         ('ds_nodash', '20180101'),
         ('first_day_of_month', '2018-01-01'),
@@ -156,9 +158,29 @@ class TestAirflow:
         ('last_day_of_year', '2018-12-31'),
         ('first_day_of_year_nodash', '20180101'),
         ('last_day_of_year_nodash', '20181231'),
+
+        # Config entries stored in the database
+        ('project_id', 'test_project'),
+        ('pipeline_dataset', 'dataset'),
+        ('pipeline_bucket', 'bucket'),
+
+        # Entries added by extra config
+        ('foo', 'baz'),
+        ('additional', 'additional_value'),
+
+        # Entries due to the base config
+        ('base', 'base_value'),
     ])
     def test_config(self, key, expected, dag_factory, dag_config):
-        factory = dag_factory(pipeline=dag_config)
+        base_config = {
+            'base': 'base_value',
+            'project_id': 'other_project',
+        }
+        extra_config = {
+            'foo': 'baz',
+            'additional': 'additional_value',
+        }
+        factory = dag_factory(pipeline=dag_config, base_config=base_config, extra_config=extra_config)
         dag = factory.build('config_test_dag')
         task = self.assert_expected_task(
             task_id=key,

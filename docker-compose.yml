@@ -1,0 +1,8 @@
+version: '2'
+services:
+  test:
+    image: gfw/pipe-tools
+    build: .
+    command: py.test tests
+    volumes:
+      - "./:/opt/project"

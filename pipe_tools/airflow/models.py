@@ -5,13 +5,16 @@ from airflow.contrib.sensors.bigquery_sensor import BigQueryTableSensor
 
 
 class DagFactory(object):
-    def __init__(self, pipeline, schedule_interval='@daily', extra_default_args=None, extra_config=None):
+    def __init__(self, pipeline, schedule_interval='@daily', extra_default_args={}, extra_config={}, base_config={}):
         self.pipeline = pipeline
-        self.config = config_tools.load_config(pipeline)
-        self.default_args = config_tools.default_args(self.config)
 
-        self.default_args.update(extra_default_args or {})
-        self.config.update(extra_config or {})
+        loaded_config = config_tools.load_config(pipeline)
+        self.config = base_config.copy()
+        self.config.update(loaded_config)
+        self.config.update(extra_config)
+
+        self.default_args = config_tools.default_args(self.config)
+        self.default_args.update(extra_default_args)
 
         self.schedule_interval = schedule_interval
 
