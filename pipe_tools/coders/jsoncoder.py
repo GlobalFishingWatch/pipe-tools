@@ -11,47 +11,47 @@ class JSONDictCoder(beam.coders.Coder):
         return ujson.dumps(value)
 
     def decode(self, value):
-        return JSONDict(ujson.loads(value))
+        return ujson.loads(value)
 
     def is_deterministic(self):
         return True
 
 
-class JSONDict(dict):
-    """A single AIS/VMS message stored as a python dict with string keys
-    We need to make this a class so taht we can properly use the type coding system
-    in Beam to JSON-encode messages as we move them around.
-    """
+# class JSONDict(dict):
+#     """A single AIS/VMS message stored as a python dict with string keys
+#     We need to make this a class so taht we can properly use the type coding system
+#     in Beam to JSON-encode messages as we move them around.
+#     """
 
 # We could be more specific here, since the values 
 # are constrained to be valid JSON, although we can't fully specify it
 # so probably good enough.
-# JSONDict = typehints.Dict[str, typehints.Any]
+JSONDict = typehints.Dict[str, typehints.Any]
 
-beam.coders.registry.register_coder(JSONDict, JSONDictCoder)
-
-
-class ReadAsJSONDict(PTransform):
-    """
-    We need this because providing a custom coder to BigQuerySource does not seem to work, and we need the
-    output from that source to be a JSONDict so that our JSONCoder will get used to serialize the rows
-    when we pass data from one node to another in Beam (because json is faster and better then pickle)
-    """
-
-    def __init__(self, source):
-        self.source = source
-
-    def expand(self, p):
-        return (
-            p | beam.io.Read(self.source)
-            | beam.ParDo(JSONDictDoFn())
-        )
+# beam.coders.registry.register_coder(JSONDict, JSONDictCoder)
 
 
-@typehints.with_input_types(typehints.Dict)
-# @typehints.with_output_types(JSONDict)
-class JSONDictDoFn(beam.DoFn):
-    """converts a dict to a JSONDict"""
+# class ReadAsJSONDict(PTransform):
+#     """
+#     We need this because providing a custom coder to BigQuerySource does not seem to work, and we need the
+#     output from that source to be a JSONDict so that our JSONCoder will get used to serialize the rows
+#     when we pass data from one node to another in Beam (because json is faster and better then pickle)
+#     """
 
-    def process(self, d):
-        yield d
+#     def __init__(self, source):
+#         self.source = source
+
+#     def expand(self, p):
+#         return (
+#             p | beam.io.Read(self.source)
+#             | beam.ParDo(JSONDictDoFn())
+#         )
+
+
+# @typehints.with_input_types(typehints.Dict)
+# # @typehints.with_output_types(JSONDict)
+# class JSONDictDoFn(beam.DoFn):
+#     """converts a dict to a JSONDict"""
+
+#     def process(self, d):
+#         yield d

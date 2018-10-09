@@ -14,7 +14,6 @@ from apache_beam.io.filesystem import CompressionTypes
 from pipe_tools.timestamp import SECONDS_IN_DAY
 from pipe_tools.timestamp import datetimeFromTimestamp
 from pipe_tools.coders import JSONDictCoder
-from pipe_tools.coders import JSONDict
 from apache_beam import typehints
 from apache_beam.typehints import Tuple, KV
 
@@ -77,7 +76,7 @@ class DateShardDoFn(beam.DoFn):
         self.shard_counter += 1
         if self.shard_counter >= self.shards_per_day:
             self.shard_counter -= self.shards_per_day
-        assert isinstance(element, JSONDict), 'element must be a JSONDict'
+        assert isinstance(element, {}), 'element must be a dict'
         yield ((date, shard), element)
 
 

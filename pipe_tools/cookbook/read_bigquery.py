@@ -8,7 +8,6 @@ from apache_beam.options.pipeline_options import StandardOptions, TypeOptions, G
 from pipe_tools.timestamp import TimestampedValueDoFn
 from pipe_tools.io import WriteToDatePartitionedFiles
 from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
-from pipe_tools.coders import ReadAsJSONDict
 from pipe_tools.options import ReadFileAction
 
 # Read from Bigquery and write to Date Partitioned Files
@@ -64,7 +63,7 @@ def build_pipeline(options):
     pipeline = beam.Pipeline(options=options)
     (
         pipeline
-        | "ReadFromBigQuery" >> ReadAsJSONDict(source)
+        | "ReadFromBigQuery" >> beam.io.Read(source)
         | "ConvertTimestamp" >> beam.ParDo(ParseBeamBQStrTimestampDoFn())
         | "AddTimestampedValue" >> beam.ParDo(TimestampedValueDoFn())
         | "WriteDatePartitions" >> WriteToDatePartitionedFiles(file_path_prefix=options.output_file_prefix,
