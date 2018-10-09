@@ -76,7 +76,7 @@ class DateShardDoFn(beam.DoFn):
         self.shard_counter += 1
         if self.shard_counter >= self.shards_per_day:
             self.shard_counter -= self.shards_per_day
-        assert isinstance(element, {}), 'element must be a dict'
+        assert isinstance(element, dict), 'element must be a dict'
         yield ((date, shard), element)
 
 
