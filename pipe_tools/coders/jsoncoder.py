@@ -22,7 +22,11 @@ class JSONDict(dict):
     We need to make this a class so taht we can properly use the type coding system
     in Beam to JSON-encode messages as we move them around.
     """
-    pass
+
+# We could be more specific here, since the values 
+# are constrained to be valid JSON, although we can't fully specify it
+# so probably good enough.
+# JSONDict = typehints.Dict[str, typehints.Any]
 
 beam.coders.registry.register_coder(JSONDict, JSONDictCoder)
 
@@ -45,9 +49,9 @@ class ReadAsJSONDict(PTransform):
 
 
 @typehints.with_input_types(typehints.Dict)
-@typehints.with_output_types(JSONDict)
+# @typehints.with_output_types(JSONDict)
 class JSONDictDoFn(beam.DoFn):
     """converts a dict to a JSONDict"""
 
     def process(self, d):
-        yield JSONDict(d)
+        yield d

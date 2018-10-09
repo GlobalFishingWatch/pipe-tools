@@ -137,8 +137,8 @@ def rfc3339strFromTimestamp(ts):
 def timestampFromRfc3339str(s):
     return timestampFromUdatetime(udatetime.from_string(s))
 
-@typehints.with_input_types(JSONDict)
-@typehints.with_output_types(JSONDict)
+# @typehints.with_input_types(JSONDict)
+# @typehints.with_output_types(JSONDict)
 class ParseBeamBQStrTimestampDoFn(beam.DoFn):
     """Convert timestamp fields from Beam/BigQuery formatted string to timestamp
 
@@ -171,8 +171,8 @@ class ParseBeamBQStrTimestampDoFn(beam.DoFn):
         yield element
 
 
-@typehints.with_input_types(JSONDict)
-@typehints.with_output_types(JSONDict)
+# @typehints.with_input_types(JSONDict)
+# @typehints.with_output_types(JSONDict)
 class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
     """Convert timestamp fields from Beam/BigQuery formatted string to timestamp
 
@@ -195,7 +195,7 @@ class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
         super(SafeParseBeamBQStrTimestampDoFn, self).__init__()
 
     def process(self, element):
-        new_element = JSONDict(element)
+        new_element = element.copy()
         for f in self.fields:
             v = new_element.get(f)
             if v is not None:
@@ -203,8 +203,8 @@ class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
         yield new_element
 
 
-@typehints.with_input_types(JSONDict)
-@typehints.with_output_types(JSONDict)
+# @typehints.with_input_types(JSONDict)
+# @typehints.with_output_types(JSONDict)
 class TimestampedValueDoFn(beam.DoFn):
     """Use this to extract a timestamp from a message.  process() expects a dict with the
     specified field containing a unix timestamp"""

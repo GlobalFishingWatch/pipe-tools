@@ -29,7 +29,7 @@ from apache_beam.typehints import Tuple, KV
 T = typehints.TypeVariable('T')
 
 
-@typehints.with_input_types(JSONDict)
+# @typehints.with_input_types(JSONDict)
 @typehints.with_output_types(str)
 class WritePartitionedFiles(PTransform):
     """
