@@ -212,7 +212,7 @@ class PartitionedFileSink(FileBasedSink):
                     logging.debug('Rename successful: %s -> %s', src, dest)
             return exceptions
 
-    def finalize_write(self, init_result, writer_results):
+    def finalize_write(self, init_result, writer_results, pre_finalize_result):
         file_path_prefix = self.file_path_prefix.get()
 
         shard_paths = it.chain.from_iterable(writer_results)

@@ -1,7 +1,7 @@
 import re
 
 from airflow.contrib.operators.dataflow_operator import DataFlowPythonOperator
-from airflow.contrib.operators.dataflow_operator import GoogleCloudBucketHelper
+# from airflow.contrib.operators.dataflow_operator import GoogleCloudBucketHelper
 from airflow.contrib.hooks.gcp_dataflow_hook import DataFlowHook
 from airflow.contrib.hooks.gcp_dataflow_hook import _Dataflow
 from airflow.utils.decorators import apply_defaults
