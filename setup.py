@@ -29,7 +29,7 @@ AIRFLOW_DEPENDENCIES = [
 
 # Frozen dependencies for the google cloud dataflow dependency
 DATAFLOW_PINNED_DEPENDENCIES = [
-    'apache-beam==2.6.0'
+    'apache-beam[gcp]==2.6.0'
 ]
 
 SCRIPTS = [
