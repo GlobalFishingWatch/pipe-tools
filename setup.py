@@ -30,7 +30,7 @@ AIRFLOW_DEPENDENCIES = [
 
 # Frozen dependencies for the google cloud dataflow dependency
 DATAFLOW_PINNED_DEPENDENCIES = [
-    'apache-beam'
+    'apache-beam==2.6.0'
     # "apache-beam==2.1.0",
     # "avro==1.8.2",
     # "cachetools==2.0.1",
