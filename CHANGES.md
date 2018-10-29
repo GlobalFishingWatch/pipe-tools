@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.1 - 
+--------------------
+
+* [ ](https://github.com/GlobalFishingWatch/pipe-tools/pull/) Added modified version of the original BigQueryCreateEmptyTableOperator that only add the table if it does not exist, avoiding it to fail on that case. 
+
 0.2.0 - (2018-09-13)
 --------------------
 
