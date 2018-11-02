@@ -19,7 +19,7 @@ DEPENDENCIES = [
     "udatetime",
     "python-dateutil",
     "newlinejson",
-    "apache-airflow==1.9.0",
+    "apache-airflow==1.10.0",
     "pandas-gbq",
 ]
 
