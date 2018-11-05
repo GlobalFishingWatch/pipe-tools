@@ -20,6 +20,8 @@ DEPENDENCIES = [
     "python-dateutil",
     "newlinejson",
     "apache-airflow==1.10.0",
+    "cryptography",
+    "kubernetes",
     "pandas-gbq",
 ]
 
