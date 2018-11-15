@@ -8,6 +8,7 @@ from airflow.utils.decorators import apply_defaults
 
 
 class DataFlowDirectRunnerHook(DataFlowHook):
+
     def _start_dataflow(self, task_id, variables, dataflow, name, command_prefix):
         cmd = command_prefix + self._build_cmd(task_id, variables, dataflow)
         _Dataflow(cmd).wait_for_done()

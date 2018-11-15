@@ -1,16 +1,40 @@
 import json
+import logging
 
-from airflow.contrib.hooks.bigquery_hook import BigQueryHook
-from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook, _parse_gcs_url
+from airflow.contrib.hooks.bigquery_hook import BigQueryHook, BigQueryCursor
+from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from pipe_tools.timestamp import daterange, str2date
+
+#TODO the method parse_gcs_url mus be removed when Airflow upgrades to 1.10
+def parse_gcs_url(gsurl):
+    """
+    Given a Google Cloud Storage URL (gs://<bucket>/<blob>), returns a
+    tuple containing the corresponding bucket and blob.
+    """
+    # Python 3
+    try:
+        from urllib.parse import urlparse
+    # Python 2
+    except ImportError:
+        from urlparse import urlparse
+
+    parsed_url = urlparse(gsurl)
+    if not parsed_url.netloc:
+        raise ValueException('Please provide a bucket name')
+    else:
+        bucket = parsed_url.netloc
+        # Remove leading '/' but NOT trailing one
+        blob = parsed_url.path.lstrip('/')
+        return bucket, blob
 
 
 class BigQueryCreateEmptyTableOperator(BaseOperator):
     """
     Creates a new, empty table in the specified BigQuery dataset,
     optionally with schema if the table doesn't exit.
-    
+
     This is a hack that we had to implement due to the fact that
     Dataflow BQ Sink does not have the create disposition `ALWAYS_CREATE`
 
@@ -96,7 +120,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
         )
 
     """
-    template_fields = ('dataset_id', 'table_id', 'project_id', 'gcs_schema_object')
+    template_fields = ('dataset_id', 'table_id', 'project_id', 'gcs_schema_object', 'start_date_str', 'end_date_str')
     ui_color = '#f0eee4'
 
     @apply_defaults
@@ -105,6 +129,8 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                  table_id,
                  project_id=None,
                  schema_fields=None,
+                 start_date_str=None,
+                 end_date_str=None,
                  gcs_schema_object=None,
                  time_partitioning={},
                  bigquery_conn_id='bigquery_default',
@@ -118,6 +144,8 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
         self.dataset_id = dataset_id
         self.table_id = table_id
         self.schema_fields = schema_fields
+        self.start_date_str = start_date_str
+        self.end_date_str = end_date_str
         self.gcs_schema_object = gcs_schema_object
         self.bigquery_conn_id = bigquery_conn_id
         self.google_cloud_storage_conn_id = google_cloud_storage_conn_id
@@ -127,31 +155,110 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
     def execute(self, context):
         bq_hook = BigQueryHook(bigquery_conn_id=self.bigquery_conn_id,
                                delegate_to=self.delegate_to)
-        
-        table_exists =  bq_hook.table_exists(self.project_id,
-                                             self.dataset_id,
-                                             self.table_id)
-        if not table_exists:
-          if not self.schema_fields and self.gcs_schema_object:
-  
-              gcs_bucket, gcs_object = _parse_gcs_url(self.gcs_schema_object)
-  
-              gcs_hook = GoogleCloudStorageHook(
-                  google_cloud_storage_conn_id=self.google_cloud_storage_conn_id,
-                  delegate_to=self.delegate_to)
-              schema_fields = json.loads(gcs_hook.download(
-                  gcs_bucket,
-                  gcs_object).decode("utf-8"))
-          else:
-              schema_fields = self.schema_fields
-  
-          conn = bq_hook.get_conn()
-          cursor = conn.cursor()
-  
-          cursor.create_empty_table(
-              project_id=self.project_id,
-              dataset_id=self.dataset_id,
-              table_id=self.table_id,
-              schema_fields=schema_fields,
-              time_partitioning=self.time_partitioning
-          )
+
+        logging.info('start_date_str = %s', self.start_date_str)
+        logging.info('end_date_str = %s', self.end_date_str)
+        logging.info('Date conversion starts')
+        start = str2date(self.start_date_str)
+        end = str2date(self.end_date_str)
+        logging.info('Date conversion ends')
+
+        for i in daterange(start, end):
+            time_partitioning = i.strftime("%Y%m%d")
+            partitioned_table_id = self.table_id + time_partitioning
+            logging.info("Partitioned table {0}".format(partitioned_table_id))
+
+            logging.info('Hooks to check if table exists <%s:%s.%s>',
+                         self.project_id,
+                         self.dataset_id,
+                         partitioned_table_id)
+            table_exists = bq_hook.table_exists(self.project_id,
+                                                self.dataset_id,
+                                                partitioned_table_id)
+            if not table_exists:
+                logging.info('Table <%s> does not exists', partitioned_table_id)
+                schema_fields = None
+                if not self.schema_fields and self.gcs_schema_object:
+                    gcs_bucket, gcs_object = parse_gcs_url(self.gcs_schema_object)
+
+                    logging.info('Gets the schema fields from GCS gs://%s/%s',
+                                 gcs_bucket,
+                                 gcs_object)
+                    gcs_hook = GoogleCloudStorageHook(
+                        google_cloud_storage_conn_id = self.google_cloud_storage_conn_id,
+                        delegate_to = self.delegate_to)
+                    schema_fields = json.loads(gcs_hook.download(
+                        gcs_bucket,
+                        gcs_object).decode("utf-8"))
+                else:
+                    schema_fields = self.schema_fields
+
+                logging.info('Connects to BigQuery')
+                cursor = BigQueryHelperCursor(bq_hook.get_service(), self.project_id)
+
+                logging.info('Creates the empty table %s with the schema %s',
+                             partitioned_table_id,
+                             schema_fields)
+                cursor.create_empty_table(
+                    project_id = self.project_id,
+                    dataset_id = self.dataset_id,
+                    table_id = partitioned_table_id,
+                    schema_fields = schema_fields,
+                    time_partitioning = time_partitioning
+                )
+
+#TODO removes this class once Airflow upgrades version to 1.10.0
+class BigQueryHelperCursor(BigQueryCursor):
+    """
+    Wrapper of a BigQueryCursor that implements helper method
+    useful for creating an empty table.
+    """
+    def __init__(self, service, project_id):
+        super(BigQueryHelperCursor, self).__init__(service=service, project_id=project_id)
+
+    def create_empty_table(self,
+                           project_id,
+                           dataset_id,
+                           table_id,
+                           schema_fields=None,
+                           time_partitioning={}
+                           ):
+        project_id = project_id if project_id is not None else self.project_id
+
+        table_resource = {
+            'tableReference': {
+                'tableId': table_id
+            }
+        }
+
+        if schema_fields:
+            table_resource['schema'] = {'fields': schema_fields}
+
+        if time_partitioning:
+            table_resource['timePartitioning'] = time_partitioning
+
+        self.log.info('Creating Table %s:%s.%s',
+                      project_id, dataset_id, table_id)
+
+        try:
+            self.service.tables().insert(
+                projectId=project_id,
+                datasetId=dataset_id,
+                body=table_resource).execute()
+
+            self.log.info('Table created successfully: %s:%s.%s',
+                          project_id, dataset_id, table_id)
+
+        except HttpError as err:
+            raise AirflowException(
+                'BigQuery job failed. Error was: {}'.format(err.content)
+            )
+
+
+#TODO removes this class once Airflow upgrades version to 1.10.0
+class AirflowException(Exception):
+    """
+    Base class for all Airflow's errors.
+    Each custom exception should be derived from this class
+    """
+    status_code = 500

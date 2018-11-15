@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.2.4 - (2018-11-15)
+--------------------
+
+* [51](https://github.com/GlobalFishingWatch/pipe-tools/pull/51)
+* Returns generator object for `daterange` method.
+* Parse the string date to a Airflow format accepted using `AIRFLOW_DATE`.
+* Iterates and creates empty table for needed dates.
+* Logs all the process to verify each step
+* Includes parse_gcs_url method from Airflow version 1.10.0, needed in case the schema reads from GCS. Not contemplated in Airflow 1.9
+* Creates class `BigQueryHelperCursor` wrapper to create_empty_tables from service cursor. Not contemplated in Airflow 1.9
+* Creates `AirflowException` to return an error in case the creation of tables fails.
+
+
 0.2.1 - 
 --------------------
 
