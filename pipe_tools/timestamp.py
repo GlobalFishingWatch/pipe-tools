@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import udatetime
 import pytz
 
@@ -17,6 +17,8 @@ BEAM_BQ_TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f UTC"  # this is the format bigq
 # This is a much better string format for datetimes that is supported by udatetime
 # Note that %z is not supported in pythng 2.7 for udatetime.strptime()
 RFC3339_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
+
+AIRFLOW_DATE = "%Y-%m-%d"
 
 DATE_FORMAT = "%Y-%m-%d"
 
@@ -136,6 +138,25 @@ def rfc3339strFromTimestamp(ts):
 
 def timestampFromRfc3339str(s):
     return timestampFromUdatetime(udatetime.from_string(s))
+
+def str2date(s):
+    """
+    :param s date in string expresed with the format AIRFLOW_DATE
+    :type s string
+    :return datetime representing the string s.
+    """
+    return datetime.strptime(s, AIRFLOW_DATE)
+
+def daterange(start_date, end_date):
+    """
+    :param start_date start date
+    :type start_date datetime
+    :param end_date end date
+    :type end_date datetime
+    :return generator dates between start_date and end_date
+    """
+    for n in range(int ((end_date - start_date).days)+1):
+        yield start_date + timedelta(n)
 
 @typehints.with_input_types(JSONDict)
 @typehints.with_output_types(JSONDict)
