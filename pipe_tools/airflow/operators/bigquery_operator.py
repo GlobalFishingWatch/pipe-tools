@@ -7,29 +7,6 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 from pipe_tools.timestamp import daterange, str2date
 
-#TODO the method parse_gcs_url mus be removed when Airflow upgrades to 1.10
-def parse_gcs_url(gsurl):
-    """
-    Given a Google Cloud Storage URL (gs://<bucket>/<blob>), returns a
-    tuple containing the corresponding bucket and blob.
-    """
-    # Python 3
-    try:
-        from urllib.parse import urlparse
-    # Python 2
-    except ImportError:
-        from urlparse import urlparse
-
-    parsed_url = urlparse(gsurl)
-    if not parsed_url.netloc:
-        raise ValueException('Please provide a bucket name')
-    else:
-        bucket = parsed_url.netloc
-        # Remove leading '/' but NOT trailing one
-        blob = parsed_url.path.lstrip('/')
-        return bucket, blob
-
-
 class BigQueryCreateEmptyTableOperator(BaseOperator):
     """
     Creates a new, empty table in the specified BigQuery dataset,
@@ -59,6 +36,10 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                            {"name": "salary", "type": "INTEGER", "mode": "NULLABLE"}]
 
     :type schema_fields: list
+    :param start_date_str start date in string format
+    :type start_date_str string
+    :param end_date_str end date in string format
+    :type end_date_str string
     :param gcs_schema_object: Full path to the JSON file containing
         schema (templated). For
         example: ``gs://test-bucket/dir1/dir2/employee_schema.json``
@@ -177,33 +158,17 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                                                 partitioned_table_id)
             if not table_exists:
                 logging.info('Table <%s> does not exists', partitioned_table_id)
-                schema_fields = None
-                if not self.schema_fields and self.gcs_schema_object:
-                    gcs_bucket, gcs_object = parse_gcs_url(self.gcs_schema_object)
-
-                    logging.info('Gets the schema fields from GCS gs://%s/%s',
-                                 gcs_bucket,
-                                 gcs_object)
-                    gcs_hook = GoogleCloudStorageHook(
-                        google_cloud_storage_conn_id = self.google_cloud_storage_conn_id,
-                        delegate_to = self.delegate_to)
-                    schema_fields = json.loads(gcs_hook.download(
-                        gcs_bucket,
-                        gcs_object).decode("utf-8"))
-                else:
-                    schema_fields = self.schema_fields
-
                 logging.info('Connects to BigQuery')
                 cursor = BigQueryHelperCursor(bq_hook.get_service(), self.project_id)
 
                 logging.info('Creates the empty table %s with the schema %s',
                              partitioned_table_id,
-                             schema_fields)
+                             self.schema_fields)
                 cursor.create_empty_table(
                     project_id = self.project_id,
                     dataset_id = self.dataset_id,
                     table_id = partitioned_table_id,
-                    schema_fields = schema_fields,
+                    schema_fields = self.schema_fields,
                     time_partitioning = time_partitioning
                 )
 
