@@ -26,7 +26,8 @@ DEPENDENCIES = [
 ]
 
 AIRFLOW_DEPENDENCIES = [
-    "google-api-python-client"
+    "google-api-python-client",
+    "snakebite"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency
