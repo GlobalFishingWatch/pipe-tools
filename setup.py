@@ -19,12 +19,15 @@ DEPENDENCIES = [
     "udatetime",
     "python-dateutil",
     "newlinejson",
-    "apache-airflow==1.9.0",
+    "apache-airflow==1.10.1",
+    "cryptography",
+    "kubernetes",
     "pandas-gbq",
 ]
 
 AIRFLOW_DEPENDENCIES = [
-    "google-api-python-client"
+    "google-api-python-client",
+    "snakebite"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency
