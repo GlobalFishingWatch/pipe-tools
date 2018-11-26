@@ -6,6 +6,7 @@ Changelog
 
 * [#50](https://github.com/GlobalFishingWatch/pipe-tools/pull/50)
   * Pin Airflow version to 1.10.0
+  * Pin Airflow version to 1.10.1
   * NOTE: This changes where not tested on existing pipelines with 1.9.0
 
 0.2.4 - (2018-11-15)
