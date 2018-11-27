@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0.0 - (2018-11-21)
+--------------------
+
+* [#50](https://github.com/GlobalFishingWatch/pipe-tools/pull/50)
+  * Pin Airflow version to 1.10.1
+  * NOTE: This changes where not tested on existing pipelines with 1.9.0
+
 0.2.4 - (2018-11-15)
 --------------------
 
@@ -12,7 +19,6 @@ Changelog
 * Includes parse_gcs_url method from Airflow version 1.10.0, needed in case the schema reads from GCS. Not contemplated in Airflow 1.9
 * Creates class `BigQueryHelperCursor` wrapper to create_empty_tables from service cursor. Not contemplated in Airflow 1.9
 * Creates `AirflowException` to return an error in case the creation of tables fails.
-
 
 0.2.1 - 
 --------------------

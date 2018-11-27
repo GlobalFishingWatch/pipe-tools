@@ -6,3 +6,10 @@ services:
     command: py.test tests
     volumes:
       - "./:/opt/project"
+
+  bash:
+    image: gfw/pipe-tools
+    build: .
+    command: bash
+    volumes:
+      - "./:/opt/project"

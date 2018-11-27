@@ -1,13 +1,14 @@
 import pytest
-from datetime import datetime
 from datetime import timedelta
 import os
 
 from airflow import configuration, DAG
+from airflow.utils.db import initdb
 from airflow.utils.state import State
+from airflow.utils.timezone import datetime
+from airflow.utils.timezone import utcnow
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
-from airflow.utils.db import initdb
 from airflow.models import Variable
 from pipe_tools.airflow.operators.python_operator import ExecutionDateBranchOperator
 from pipe_tools.airflow.dataflow_operator import DataFlowDirectRunnerOperator
@@ -95,7 +96,7 @@ class TestAirflow:
 
         dr = dag.create_dagrun(
             run_id="manual__",
-            start_date=datetime.utcnow(),
+            start_date=utcnow(),
             execution_date=DEFAULT_DATE,
             state=State.RUNNING
         )
