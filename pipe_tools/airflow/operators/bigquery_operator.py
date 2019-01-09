@@ -1,5 +1,6 @@
 import json
 import logging
+from urllib2 import HTTPError
 
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook, BigQueryCursor
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
@@ -214,7 +215,7 @@ class BigQueryHelperCursor(BigQueryCursor):
             self.log.info('Table created successfully: %s:%s.%s',
                           project_id, dataset_id, table_id)
 
-        except HttpError as err:
+        except HTTPError as err:
             raise AirflowException(
                 'BigQuery job failed. Error was: {}'.format(err.content)
             )
