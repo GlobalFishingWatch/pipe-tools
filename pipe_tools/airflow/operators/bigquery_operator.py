@@ -201,7 +201,7 @@ class BigQueryHelperCursor(BigQueryCursor):
             table_resource['schema'] = {'fields': schema_fields}
 
         if time_partitioning:
-            table_resource['timePartitioning'] = time_partitioning
+            table_resource['timePartitioning'] = {'requirePartitionFilter': True, 'type': 'DAY'}
 
         self.log.info('Creating Table %s:%s.%s',
                       project_id, dataset_id, table_id)
