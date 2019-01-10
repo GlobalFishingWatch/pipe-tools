@@ -114,7 +114,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                  start_date_str=None,
                  end_date_str=None,
                  gcs_schema_object=None,
-                 time_partitioning={},
+                 time_partitioning=None,
                  bigquery_conn_id='bigquery_default',
                  google_cloud_storage_conn_id='google_cloud_default',
                  delegate_to=None,
