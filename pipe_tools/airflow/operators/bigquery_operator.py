@@ -118,6 +118,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                  bigquery_conn_id='bigquery_default',
                  google_cloud_storage_conn_id='google_cloud_default',
                  delegate_to=None,
+                 is_partitioned_table=False,
                  *args, **kwargs):
 
         super(BigQueryCreateEmptyTableOperator, self).__init__(*args, **kwargs)
@@ -133,6 +134,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
         self.google_cloud_storage_conn_id = google_cloud_storage_conn_id
         self.delegate_to = delegate_to
         self.time_partitioning = time_partitioning
+        self.is_partitioned_table = is_partitioned_table
 
     def execute(self, context):
         bq_hook = BigQueryHook(bigquery_conn_id=self.bigquery_conn_id,
@@ -170,7 +172,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                     dataset_id = self.dataset_id,
                     table_id = partitioned_table_id,
                     schema_fields = self.schema_fields,
-                    time_partitioning = time_partitioning
+                    time_partitioning = None if self.is_partitioned_table == False else {'requirePartitionFilter': True, 'type': 'DAY'}
                 )
 
 #TODO removes this class once Airflow upgrades version to 1.10.0
@@ -187,7 +189,7 @@ class BigQueryHelperCursor(BigQueryCursor):
                            dataset_id,
                            table_id,
                            schema_fields=None,
-                           time_partitioning={}
+                           time_partitioning=None
                            ):
         project_id = project_id if project_id is not None else self.project_id
 
@@ -201,7 +203,7 @@ class BigQueryHelperCursor(BigQueryCursor):
             table_resource['schema'] = {'fields': schema_fields}
 
         if time_partitioning:
-            table_resource['timePartitioning'] = {'requirePartitionFilter': True, 'type': 'DAY'}
+            table_resource['timePartitioning'] = time_partitioning
 
         self.log.info('Creating Table %s:%s.%s',
                       project_id, dataset_id, table_id)
