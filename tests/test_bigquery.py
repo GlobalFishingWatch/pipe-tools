@@ -17,7 +17,7 @@ class TestBigquery:
         "dataset.table"
     ])
     def test_tableref_encode(self, table):
-        assert encode_table_ref(decode_table_ref(table)) == table
+        assert encode_table_ref(decode_table_ref(table),True) == table
 
     @pytest.mark.parametrize("value,expected", [
         ('2019-01-01', 'TIMESTAMP(2019-01-01)'),
@@ -49,15 +49,17 @@ class TestBigquery:
     ])
     def test_query_helper(self, is_date_sharded, use_legacy_sql, expected):
         table='test.test_table_'
+        project='project'
         first_date_ts = 1546300800 if is_date_sharded else None
         last_date_ts = 1546473600 if is_date_sharded else None
         client = mock.Mock()
         helper = QueryHelper(table,
+                             project=project,
                              first_date_ts=first_date_ts,
                              last_date_ts=last_date_ts,
                              use_legacy_sql=use_legacy_sql,
                              test_client=client)
-        assert encode_table_ref(helper.table_ref) == table
+        assert encode_table_ref(helper.table_ref,use_legacy_sql) == table
         assert helper.is_date_sharded == is_date_sharded
         expected = expected.format(table=table, first_date_ts=first_date_ts, last_date_ts=last_date_ts)
         assert helper.build_query() == expected
