@@ -1,6 +1,11 @@
 Changelog
 =========
 
+DEV
+--------------------
+* [#56](https://github.com/GlobalFishingWatch/pipe-tools/issues/56)
+  Option to generate standard SQL in bigquery QuerHelper
+  
 1.0.0 - (2018-11-21)
 --------------------
 
