@@ -38,8 +38,8 @@ class TestBigquery:
         (True, False,
          ("SELECT * FROM `{table}*` "
          "WHERE _TABLE_SUFFIX BETWEEN "
-         "FORMAT_TIMESTAMP('%Y%m%d', SEC_TO_TIMESTAMP({first_date_ts})) "
-         "AND FORMAT_TIMESTAMP('%Y%m%d', SEC_TO_TIMESTAMP({last_date_ts})) "
+         "FORMAT_TIMESTAMP('%Y%m%d', TIMESTAMP_SECONDS({first_date_ts})) "
+         "AND FORMAT_TIMESTAMP('%Y%m%d', TIMESTAMP_SECONDS({last_date_ts})) "
          "AND True") ),
 
         (True, True,
