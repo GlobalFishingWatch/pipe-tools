@@ -73,9 +73,12 @@ def decode_table_ref(table, dataset=None, project=None):
 
 
 # encode a TableReference to a string representation
-def encode_table_ref(table_ref):
+def encode_table_ref(table_ref, use_legacy_sql):
     if table_ref.projectId:
-        return "{}:{}.{}".format(table_ref.projectId, table_ref.datasetId, table_ref.tableId)
+        if use_legacy_sql:
+            return "{}:{}.{}".format(table_ref.projectId, table_ref.datasetId, table_ref.tableId)
+        else:
+            return "{}.{}.{}".format(table_ref.projectId, table_ref.datasetId, table_ref.tableId)
     else:
         return "{}.{}".format(table_ref.datasetId, table_ref.tableId)
 
@@ -169,14 +172,14 @@ class QueryHelper:
 
     def _format_table(self):
         if self.use_legacy_sql:
-            table = '[{}]'.format(encode_table_ref(self.table_ref))
+            table = '[{}]'.format(encode_table_ref(self.table_ref,self.use_legacy_sql))
             if self.is_date_sharded:
                 table_params = dict(table=table,
                                     first_date=self._date_to_sql_timestamp(self.first_date_ts, self.use_legacy_sql),
                                     last_date=self._date_to_sql_timestamp(self.last_date_ts, self.use_legacy_sql))
                 table = 'TABLE_DATE_RANGE({table}, {first_date}, {last_date})'.format(**table_params)
         else:
-            table = '`{}{}`'.format(encode_table_ref(self.table_ref), '*' if self.is_date_sharded else '')
+            table = '`{}{}`'.format(encode_table_ref(self.table_ref,self.use_legacy_sql), '*' if self.is_date_sharded else '')
         return table
 
     def _format_where_clause(self, where_sql):
