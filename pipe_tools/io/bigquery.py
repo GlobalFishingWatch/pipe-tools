@@ -131,19 +131,28 @@ class QueryHelper:
     Helper class that builds date range queries and fetches table schemas
     """
 
-    def __init__(self, table, dataset=None, project=None, first_date_ts=None, last_date_ts=None):
+    def __init__(self,
+                    table,
+                    dataset=None,
+                    project=None,
+                    first_date_ts=None,
+                    last_date_ts=None,
+                    use_legacy_sql=True,
+                    test_client=None):
         self.first_date_ts = first_date_ts
         self.last_date_ts = last_date_ts
 
         self.table_ref = decode_table_ref(table, dataset, project)
         table_id = self.table_ref.tableId
 
+        self.use_legacy_sql = use_legacy_sql
+
         if first_date_ts is not None:
             assert last_date_ts is not None, 'Must supply both first_date and last_date, or neither'
             dt = datetimeFromTimestamp(first_date_ts)
             table_id = '{}{}'.format(table_id, dt.strftime('%Y%m%d'))
 
-        client = BigQueryWrapper()
+        client = BigQueryWrapper(client=test_client)
         self._table_info = client._get_table(self.table_ref.projectId, self.table_ref.datasetId, table_id)
 
     @staticmethod
@@ -157,16 +166,33 @@ class QueryHelper:
             timestamp = date
         return 'SEC_TO_TIMESTAMP({})'.format(int(timestamp))
 
+    def _format_table(self):
+        if self.use_legacy_sql:
+            table = '[{}]'.format(encode_table_ref(self.table_ref))
+            if self.is_date_sharded:
+                table_params = dict(table=table,
+                                    first_date=self._date_to_sql_timestamp(self.first_date_ts),
+                                    last_date=self._date_to_sql_timestamp(self.last_date_ts))
+                table = 'TABLE_DATE_RANGE({table}, {first_date}, {last_date})'.format(**table_params)
+        else:
+            table = '`{}{}`'.format(encode_table_ref(self.table_ref), '*' if self.is_date_sharded else '')
+        return table
+
+    def _format_where_clause(self, where_sql):
+        if self.is_date_sharded and not self.use_legacy_sql:
+            template = "_TABLE_SUFFIX BETWEEN FORMAT_TIMESTAMP('%Y%m%d', {}) AND FORMAT_TIMESTAMP('%Y%m%d', {}) AND {}"
+            first_date=self._date_to_sql_timestamp(self.first_date_ts)
+            last_date=self._date_to_sql_timestamp(self.last_date_ts)
+            result = template.format(first_date, last_date, where_sql or 'True')
+        else:
+            result = where_sql or 'True'
+
+        return result
+
     def build_query(self, include_fields=None, where_sql=None):
         fields = ','.join(include_fields or '*')
-        table = '[{}]'.format(encode_table_ref(self.table_ref))
-        where = where_sql or 'True'
-        if self.is_date_sharded:
-            table_params=dict(table=table,
-                        first_date=self._date_to_sql_timestamp(self.first_date_ts),
-                        last_date=self._date_to_sql_timestamp(self.last_date_ts))
-            table = 'TABLE_DATE_RANGE({table}, {first_date}, {last_date})'.format(**table_params)
-
+        table = self._format_table()
+        where = self._format_where_clause(where_sql)
         return "SELECT {fields} FROM {table} WHERE {where}".format(fields=fields,table=table,where=where)
 
     def filter_table_schema(self, include_fields=None):
