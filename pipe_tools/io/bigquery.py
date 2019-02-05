@@ -156,7 +156,7 @@ class QueryHelper:
         self._table_info = client._get_table(self.table_ref.projectId, self.table_ref.datasetId, table_id)
 
     @staticmethod
-    def _date_to_sql_timestamp(date):
+    def _date_to_sql_timestamp(date, use_legacy_sql=True):
         if isinstance(date, basestring):
             return 'TIMESTAMP({})'.format(date)
         elif isinstance(date, datetime):
@@ -164,15 +164,16 @@ class QueryHelper:
         else:
             # assume that date is already a timestamp
             timestamp = date
-        return 'SEC_TO_TIMESTAMP({})'.format(int(timestamp))
+        ts_fn = 'SEC_TO_TIMESTAMP' if use_legacy_sql  else 'TIMESTAMP_SECONDS'
+        return '{}({})'.format(ts_fn, int(timestamp))
 
     def _format_table(self):
         if self.use_legacy_sql:
             table = '[{}]'.format(encode_table_ref(self.table_ref))
             if self.is_date_sharded:
                 table_params = dict(table=table,
-                                    first_date=self._date_to_sql_timestamp(self.first_date_ts),
-                                    last_date=self._date_to_sql_timestamp(self.last_date_ts))
+                                    first_date=self._date_to_sql_timestamp(self.first_date_ts, self.use_legacy_sql),
+                                    last_date=self._date_to_sql_timestamp(self.last_date_ts, self.use_legacy_sql))
                 table = 'TABLE_DATE_RANGE({table}, {first_date}, {last_date})'.format(**table_params)
         else:
             table = '`{}{}`'.format(encode_table_ref(self.table_ref), '*' if self.is_date_sharded else '')
@@ -181,8 +182,8 @@ class QueryHelper:
     def _format_where_clause(self, where_sql):
         if self.is_date_sharded and not self.use_legacy_sql:
             template = "_TABLE_SUFFIX BETWEEN FORMAT_TIMESTAMP('%Y%m%d', {}) AND FORMAT_TIMESTAMP('%Y%m%d', {}) AND {}"
-            first_date=self._date_to_sql_timestamp(self.first_date_ts)
-            last_date=self._date_to_sql_timestamp(self.last_date_ts)
+            first_date=self._date_to_sql_timestamp(self.first_date_ts, self.use_legacy_sql)
+            last_date=self._date_to_sql_timestamp(self.last_date_ts, self.use_legacy_sql)
             result = template.format(first_date, last_date, where_sql or 'True')
         else:
             result = where_sql or 'True'
