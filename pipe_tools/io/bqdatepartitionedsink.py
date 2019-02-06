@@ -117,7 +117,7 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
             completed_jobs = set()
             for job in waiting_jobs:
                 job_id, table_ref, date_ts = job
-                table_str = encode_table_ref(table_ref)
+                table_str = encode_table_ref(table_ref, True)
                 response = client.get_job_status(self.project_id, job_id)
                 if response.status.state == "DONE":
                     completed_jobs.add(job)
