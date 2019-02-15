@@ -1,5 +1,6 @@
 import json
 import logging
+from urllib2 import HTTPError
 
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook, BigQueryCursor
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
@@ -113,7 +114,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                  start_date_str=None,
                  end_date_str=None,
                  gcs_schema_object=None,
-                 time_partitioning={},
+                 time_partitioning=None,
                  bigquery_conn_id='bigquery_default',
                  google_cloud_storage_conn_id='google_cloud_default',
                  delegate_to=None,
@@ -143,10 +144,11 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
         start = str2date(self.start_date_str)
         end = str2date(self.end_date_str)
         logging.info('Date conversion ends')
+        logging.info('time_partitioning = %s', self.time_partitioning)
 
         for i in daterange(start, end):
-            time_partitioning = i.strftime("%Y%m%d")
-            partitioned_table_id = self.table_id + time_partitioning
+            date_no_dash = i.strftime("%Y%m%d")
+            partitioned_table_id = self.table_id + date_no_dash
             logging.info("Partitioned table {0}".format(partitioned_table_id))
 
             logging.info('Hooks to check if table exists <%s:%s.%s>',
@@ -169,7 +171,7 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                     dataset_id = self.dataset_id,
                     table_id = partitioned_table_id,
                     schema_fields = self.schema_fields,
-                    time_partitioning = time_partitioning
+                    time_partitioning = self.time_partitioning
                 )
 
 #TODO removes this class once Airflow upgrades version to 1.10.0
@@ -186,7 +188,7 @@ class BigQueryHelperCursor(BigQueryCursor):
                            dataset_id,
                            table_id,
                            schema_fields=None,
-                           time_partitioning={}
+                           time_partitioning=None
                            ):
         project_id = project_id if project_id is not None else self.project_id
 
@@ -214,7 +216,7 @@ class BigQueryHelperCursor(BigQueryCursor):
             self.log.info('Table created successfully: %s:%s.%s',
                           project_id, dataset_id, table_id)
 
-        except HttpError as err:
+        except HTTPError as err:
             raise AirflowException(
                 'BigQuery job failed. Error was: {}'.format(err.content)
             )

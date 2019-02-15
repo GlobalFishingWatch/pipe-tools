@@ -22,7 +22,8 @@ DEPENDENCIES = [
     "apache-airflow==1.10.1",
     "cryptography",
     "kubernetes",
-    "pandas-gbq",
+    "pandas-gbq==0.8.0",
+    "pandas==0.23"
 ]
 
 AIRFLOW_DEPENDENCIES = [

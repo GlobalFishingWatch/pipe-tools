@@ -1,17 +1,20 @@
 Changelog
 =========
 
-DEV
---------------------
-* [#56](https://github.com/GlobalFishingWatch/pipe-tools/issues/56)
-  Option to generate standard SQL in bigquery QuerHelper
-  
 1.0.0 - (2018-11-21)
 --------------------
 
 * [#50](https://github.com/GlobalFishingWatch/pipe-tools/pull/50)
   * Pin Airflow version to 1.10.1
   * NOTE: This changes where not tested on existing pipelines with 1.9.0
+
+0.2.5
+--------------------
+
+### ADDED
+
+* [#56](https://github.com/GlobalFishingWatch/pipe-tools/issues/56)
+  Option to generate standard SQL in bigquery QuerHelper
 
 0.2.4 - (2018-11-15)
 --------------------
