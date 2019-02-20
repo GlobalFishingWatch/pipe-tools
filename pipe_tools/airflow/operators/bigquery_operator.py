@@ -4,6 +4,7 @@ from urllib2 import HTTPError
 
 from airflow.contrib.hooks.bigquery_hook import BigQueryHook, BigQueryCursor
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
+from airflow.exceptions import AirflowException
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 from pipe_tools.timestamp import daterange, str2date
@@ -174,7 +175,6 @@ class BigQueryCreateEmptyTableOperator(BaseOperator):
                     time_partitioning = self.time_partitioning
                 )
 
-#TODO removes this class once Airflow upgrades version to 1.10.0
 class BigQueryHelperCursor(BigQueryCursor):
     """
     Wrapper of a BigQueryCursor that implements helper method
@@ -221,11 +221,3 @@ class BigQueryHelperCursor(BigQueryCursor):
                 'BigQuery job failed. Error was: {}'.format(err.content)
             )
 
-
-#TODO removes this class once Airflow upgrades version to 1.10.0
-class AirflowException(Exception):
-    """
-    Base class for all Airflow's errors.
-    Each custom exception should be derived from this class
-    """
-    status_code = 500
