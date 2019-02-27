@@ -36,8 +36,8 @@ DATAFLOW_PINNED_DEPENDENCIES = [
     "futures==3.1.1",
     "gapic-google-cloud-pubsub-v1==0.15.4",
     "google-apitools==0.5.11",
-    "google-auth-httplib2==0.0.3",
-    "google-auth==1.4.1",
+    "google-auth-httplib2==0.0.2",
+    "google-auth==1.1.0",
     "google-cloud-bigquery==0.25.0",
     "google-cloud-core==0.25.0",
     "google-cloud-dataflow==2.1.0",
@@ -56,12 +56,12 @@ DATAFLOW_PINNED_DEPENDENCIES = [
     "proto-google-cloud-datastore-v1==0.90.4",
     "proto-google-cloud-pubsub-v1==0.15.4",
     "protobuf==3.3.0",
-    "pyasn1-modules==0.2.1",
-    "pyasn1==0.4.1",
-    "requests==2.20.0",
+    "pyasn1-modules==0.1.4",
+    "pyasn1==0.3.5",
+    "requests==2.18.4",
     "rsa==3.4.2",
     "six==1.10.0",
-    "urllib3==1.23"
+    "urllib3==1.22"
 ]
 
 SCRIPTS = [

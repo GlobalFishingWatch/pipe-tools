@@ -8,6 +8,9 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+  * [#968](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/968)
+    * Removes all the airflow code and moving to the new repo [airflow-gfw](https://github.com/GlobalFishingWatch/airflow-gfw).
+
 ### ADDED
 
 ## 1.0.1 - (2018-11-21)
