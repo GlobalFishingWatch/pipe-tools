@@ -44,37 +44,3 @@ def temp_dir(request):
     request.addfinalizer(fin)  # finalizer is called at the end of the scope defined in the decorator
     return d
 
-
-# AIRFLOW_HOME special handling
-#
-# In order to test airflow operators, you need to import airflow.configuration.  Pretty much anything
-# you import from airflow will end up importing configuration.py
-#
-# In configuration.py, it reads the environment variable AIRFLW_HOME at the time of import, and if
-# there is no airflow configuration at that location or the environment variable is not set, then it
-# initializes everything.  This means that the only way to influence where AIRFLOW_HOME goes is to set
-# the environment variable BEFORE configuration.py is imported.
-#
-# In pytest_configure() below we create a temp dir and set AIRFLOW_HOME to point to that.  This method
-# gets called before the individual test files (like test_airflow.py) are imported, so this allows us
-# to use a temp dir that we can clean up after we're done
-#
-
-this = sys.modules[__name__]
-this.temp_airflow_home = None
-
-def pytest_configure(config):
-    airflow_home = tempfile.mkdtemp()
-    os.environ['AIRFLOW_HOME'] = airflow_home
-    os.environ['AIRFLOW__CORE__UNIT_TEST_MODE'] = 'True'
-    this.temp_airflow_home = airflow_home
-
-
-def pytest_unconfigure(config):
-    if this.temp_airflow_home:
-        shutil.rmtree(this.temp_airflow_home, ignore_errors=True)
-
-
-@pytest.fixture(scope='session')
-def airflow_home():
-    return this.temp_airflow_home

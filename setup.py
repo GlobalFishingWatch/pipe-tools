@@ -12,27 +12,18 @@ from setuptools import setup
 
 
 DEPENDENCIES = [
-    "pytest",
+    "newlinejson",
     "nose",
-    "ujson",
+    "pytest",
+    "python-dateutil",
     "pytz",
     "udatetime",
-    "python-dateutil",
-    "newlinejson",
-    "apache-airflow==1.10.2",
-    "cryptography",
-    "kubernetes==8.0.1",
-    "pandas-gbq==0.8.0",
-    "pandas==0.23"
-]
-
-AIRFLOW_DEPENDENCIES = [
-    "google-api-python-client",
-    "snakebite"
+    "ujson"
 ]
 
 # Frozen dependencies for the google cloud dataflow dependency
 DATAFLOW_PINNED_DEPENDENCIES = [
+    "PyYAML==3.12",
     "apache-beam==2.1.0",
     "avro==1.8.2",
     "cachetools==2.0.1",
@@ -41,13 +32,12 @@ DATAFLOW_PINNED_DEPENDENCIES = [
     "crcmod==1.7",
     "dill==0.2.6",
     "enum34==1.1.6",
-    "funcsigs==1.0.0",
     "future==0.16.0",
     "futures==3.1.1",
     "gapic-google-cloud-pubsub-v1==0.15.4",
     "google-apitools==0.5.11",
-    "google-auth==1.4.1",
     "google-auth-httplib2==0.0.3",
+    "google-auth==1.4.1",
     "google-cloud-bigquery==0.25.0",
     "google-cloud-core==0.25.0",
     "google-cloud-dataflow==2.1.0",
@@ -66,13 +56,12 @@ DATAFLOW_PINNED_DEPENDENCIES = [
     "proto-google-cloud-datastore-v1==0.90.4",
     "proto-google-cloud-pubsub-v1==0.15.4",
     "protobuf==3.3.0",
-    "pyasn1==0.4.1",
     "pyasn1-modules==0.2.1",
-    "PyYAML==3.12",
+    "pyasn1==0.4.1",
     "requests==2.20.0",
     "rsa==3.4.2",
     "six==1.10.0",
-    "urllib3==1.23",
+    "urllib3==1.23"
 ]
 
 SCRIPTS = [
@@ -92,13 +81,17 @@ source = None
 with open(os.path.join('pipe_tools', '__init__.py')) as f:
     for line in f:
         if line.strip().startswith('__version__'):
-            version = line.split('=')[1].strip().replace('"', '').replace("'", '')
+            version = line.split('=')[1].strip().replace(
+                '"', '').replace("'", '')
         elif line.strip().startswith('__author__'):
-            author = line.split('=')[1].strip().replace('"', '').replace("'", '')
+            author = line.split('=')[1].strip().replace(
+                '"', '').replace("'", '')
         elif line.strip().startswith('__email__'):
-            email = line.split('=')[1].strip().replace('"', '').replace("'", '')
+            email = line.split('=')[1].strip().replace(
+                '"', '').replace("'", '')
         elif line.strip().startswith('__source__'):
-            source = line.split('=')[1].strip().replace('"', '').replace("'", '')
+            source = line.split('=')[1].strip().replace(
+                '"', '').replace("'", '')
         elif None not in (version, author, email, source):
             break
 
@@ -108,7 +101,7 @@ setup(
     author_email=email,
     description="A python utility library for apache beam and bigquery",
     include_package_data=True,
-    install_requires=DEPENDENCIES + AIRFLOW_DEPENDENCIES + DATAFLOW_PINNED_DEPENDENCIES,
+    install_requires=DEPENDENCIES + DATAFLOW_PINNED_DEPENDENCIES,
     keywords='AIS GIS remote sensing',
     license="Apache 2.0",
     long_description=readme,
@@ -119,6 +112,3 @@ setup(
     zip_safe=True,
     scripts=SCRIPTS
 )
-
-
-
