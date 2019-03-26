@@ -5,7 +5,6 @@ import apache_beam as beam
 from apache_beam import typehints
 
 from pipe_tools.timestamp import timestampFromDatetime
-from pipe_tools.coders import JSONDict
 
 DEFAULT_START_TS = timestampFromDatetime(datetime(2017, 1, 1, 0, 0, 0, tzinfo=pytz.UTC))
 HOUR_IN_SECONDS = 60 * 60
@@ -24,7 +23,7 @@ class MessageGenerator():
     def messages(self):
         ts = self.start_ts
         for idx in xrange(self.count):
-            yield JSONDict(mmsi=1, timestamp=ts, idx=idx)
+            yield dict(mmsi=1, timestamp=ts, idx=idx)
             ts += self.increment
 
     def bigquery_schema(self):

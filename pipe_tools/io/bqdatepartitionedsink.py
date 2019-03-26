@@ -101,7 +101,7 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
             yield (job_id, table_ref, date_ts)
 
 
-    def finalize_write(self, init_result, writer_results):
+    def finalize_write(self, init_result, writer_results, pre_finalize_result):
         # writer_results is LIST[ LIST[ TUPLE[date_ts, gcs_path] ] ]
         # so first we need to flatten it to just LIST[ TUPLE[date_ts, gcs_path] ]
         shard_paths = it.chain.from_iterable(writer_results)

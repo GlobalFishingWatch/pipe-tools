@@ -3,8 +3,7 @@ import logging
 import apache_beam as beam
 
 from pipe_tools.coders import JSONDictCoder
-from pipe_tools.coders import ReadAsJSONDict
-from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
+=from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
 from pipe_tools.io.bigquery import QueryHelper
 from pipe_tools.io.gcp import parse_gcp_path
 
@@ -41,7 +40,7 @@ class GCPSource(beam.PTransform):
         source = beam.io.gcp.bigquery.BigQuerySource(query=self.query)
         return (
             pcoll
-            | "ReadFromBigQuery" >> ReadAsJSONDict(source)
+            | "ReadFromBigQuery" >> beam.io.Read(source)
             | "ConvertTimestamp" >> beam.ParDo(ParseBeamBQStrTimestampDoFn(fields=list(ts_fields)))
         )
 

@@ -21,7 +21,7 @@ class TestKeyPartitionedSink():
         for vessel_id in xrange(count):
             if stringify:
                 vessel_id = str(vessel_id)
-            yield JSONDict(**{key: vessel_id})
+            yield dict(**{key: vessel_id})
 
     @pytest.mark.parametrize("stringify,key,count,shard_name_template", [
         (False, 'id', 100, None),
