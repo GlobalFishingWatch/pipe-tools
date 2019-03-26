@@ -38,8 +38,7 @@ class TestCoders():
         messages = MessageGenerator()
 
         source = beam.Create(messages)
-        assert source.get_output_type() == Dict[str, Union[float, int]], 
-                                                (source.get_output_type(), JSONDict)
+        assert source.get_output_type() == Dict[str, Union[float, int]], (source.get_output_type(), JSONDict)
 
         with _TestPipeline() as p:
             result = (

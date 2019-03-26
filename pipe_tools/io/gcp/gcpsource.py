@@ -3,7 +3,7 @@ import logging
 import apache_beam as beam
 
 from pipe_tools.coders import JSONDictCoder
-=from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
+from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
 from pipe_tools.io.bigquery import QueryHelper
 from pipe_tools.io.gcp import parse_gcp_path
 
