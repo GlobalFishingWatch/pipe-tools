@@ -6,6 +6,7 @@ from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
 from apache_beam.testing.util import assert_that
 from apache_beam.testing.util import equal_to
 from apache_beam.coders import typecoders
+from apache_beam.typehints import Dict, Union
 
 from pipe_tools.coders import JSONDictCoder
 from pipe_tools.coders import JSONDict
