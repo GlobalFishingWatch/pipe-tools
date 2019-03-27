@@ -2,6 +2,8 @@ import logging
 import sys
 
 # From https://beam.apache.org/documentation/sdks/python-dependencies/
+beam_version = "2.11.0"
+
 beam_requirement_text = """
 avro-python3    >=1.8.1,<2.0.0; python_version >= "3.0"
 avro    >=1.8.1,<2.0.0; python_version < "3.0"
@@ -43,7 +45,7 @@ py3_reqs = set([
 
 def parse_beam_requirements(text):
     py3 = (sys.version_info.major == 3)
-    requirements = []
+    requirements = ["apache_beam==" + beam_version]
     for line in text.split('\n'):
         line = line.strip()
         if not line:
