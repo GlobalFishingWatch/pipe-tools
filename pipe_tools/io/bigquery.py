@@ -8,7 +8,6 @@ from apache_beam.io.gcp.bigquery import WriteToBigQuery
 from apache_beam.io.gcp.bigquery import parse_table_schema_from_json
 import apache_beam.io.gcp.internal.clients.bigquery as bq
 from apache_beam.utils import retry
-from apache_beam.io.gcp.bigquery import _parse_table_reference
 from apache_beam.io.gcp.internal.clients.bigquery import TableSchema
 
 
@@ -72,7 +71,7 @@ def parse_table_schema(schema):
 # into a TableReferenece.   You can supply each component separately,
 # or all in one string
 def decode_table_ref(table, dataset=None, project=None):
-    return _parse_table_reference(table, dataset, project)
+    return beam.io.gcp.bigquery_tools.parse_table_reference(table, dataset, project)
 
 
 # encode a TableReference to a string representation
