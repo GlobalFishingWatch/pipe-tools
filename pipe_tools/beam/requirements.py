@@ -33,39 +33,4 @@ pyyaml  >=3.12,<4.0.0
 typing  >=3.6.0,<3.7.0; python_version < "3.5.0"
 """
 
-py2_reqs = set([
-    'python_version<"3.0"',
-
-    ])
-
-py3_reqs = set([
-    'python_version>="3.0"',
-    'python_version>="3.0"orplatform_system!="windows"'
-    ])
-
-def parse_beam_requirements(text):
-    py3 = (sys.version_info.major == 3)
-    requirements = ["apache_beam==" + beam_version]
-    for line in text.split('\n'):
-        line = line.strip()
-        if not line:
-            continue
-        if ';' in line:
-            line, req = line.split(';', 1)
-            req = req.lower().replace(' ', '')
-            if req in py3_reqs:
-                if not py3:
-                    continue
-            elif req in py2_reqs:
-                if py3:
-                    continue
-            elif req == 'python_version<"3.5.0"':
-                if sys.version_info.major == 3 and sys.version_info.minor >= 5:
-                    # Hack for typing module
-                    continue
-            else:
-                logging.warn('ignoring spec: {}'.format(req))
-        requirements.append('{}'.format(line.replace(' ','')))
-    return requirements
-
-requirements = parse_beam_requirements(beam_requirement_text)
+requirements = ["apache_beam==" + beam_version] + beam_requirement_text.split('\n')
