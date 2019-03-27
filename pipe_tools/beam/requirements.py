@@ -1,7 +1,21 @@
-import logging
-import sys
+"""Requirements for Apache Beam
 
-# From https://beam.apache.org/documentation/sdks/python-dependencies/
+Module for holding the dependencies for the currently
+used Apache Beam version. 
+
+To update the dependencies:
+
+1. Go to https://beam.apache.org/documentation/sdks/python-dependencies/
+   and select the version of bean you want to use.
+
+2. Copy the table and replace the contents of `beam_requirement_text` below
+   with it.
+
+3. Update `beam_version` to version you selected in 1.
+
+
+"""
+
 beam_version = "2.11.0"
 
 beam_requirement_text = """
