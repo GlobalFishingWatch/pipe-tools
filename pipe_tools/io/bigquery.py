@@ -16,6 +16,9 @@ from pipe_tools.timestamp import timestampFromDatetime
 from pipe_tools.timestamp import datetimeFromTimestamp
 
 
+MAX_RETRIES = 8
+
+
 def parse_table_schema(schema):
     """
     Accepts a BigQuery tableschema as a string, dict (from json), or bigquery.TabelSchema and returns
@@ -85,13 +88,13 @@ def encode_table_ref(table_ref, use_legacy_sql):
 
 
 # subclass BigQueryWrapper so we can add a few things
-class BigQueryWrapper(beam.io.gcp.bigquery.BigQueryWrapper):
+class BigQueryWrapper(beam.io.gcp.bigquery_tools.BigQueryWrapper):
     def __init__(self, **kwargs):
         super(BigQueryWrapper, self).__init__(**kwargs)
 
 
     @retry.with_exponential_backoff(
-        num_retries=beam.io.gcp.bigquery.MAX_RETRIES,
+        num_retries=MAX_RETRIES,
         retry_filter=retry.retry_on_server_errors_and_timeout_filter)
     def load_table(self, job_id, project_id, table_ref, table_schema, gcs_urls,
                    create_disposition, write_disposition):
@@ -117,7 +120,7 @@ class BigQueryWrapper(beam.io.gcp.bigquery.BigQueryWrapper):
 
 
     @retry.with_exponential_backoff(
-        num_retries=beam.io.gcp.bigquery.MAX_RETRIES,
+        num_retries=MAX_RETRIES,
         retry_filter=retry.retry_on_server_errors_and_timeout_filter)
     def get_job_status(self, project_id, job_id):
         request = bq.BigqueryJobsGetRequest(
@@ -125,7 +128,7 @@ class BigQueryWrapper(beam.io.gcp.bigquery.BigQueryWrapper):
         return self.client.jobs.Get(request)
 
     def get_table_schema(self, project_id, dataset_id, table_id):
-        table = self._get_table(project_id, dataset_id, table_id)
+        table = self.get_table(project_id, dataset_id, table_id)
         return table.schema
 
 
@@ -156,7 +159,7 @@ class QueryHelper:
             table_id = '{}{}'.format(table_id, dt.strftime('%Y%m%d'))
 
         client = BigQueryWrapper(client=test_client)
-        self._table_info = client._get_table(self.table_ref.projectId, self.table_ref.datasetId, table_id)
+        self._table_info = client.get_table(self.table_ref.projectId, self.table_ref.datasetId, table_id)
 
     @staticmethod
     def _date_to_sql_timestamp(date, use_legacy_sql=True):
