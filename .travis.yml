@@ -7,9 +7,6 @@ cache:
 python:
 - 2.7
 
-env:
-- SLUGIFY_USES_TEXT_UNIDECODE=yes
-
 install:
 - pip install -e .
 

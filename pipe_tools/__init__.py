@@ -3,7 +3,7 @@ Tools for running the GFW pipeline.
 """
 
 
-__version__ = '2.0.0-dev'
+__version__ = '3.0.0'
 __author__ = 'Paul Woods'
 __email__ = 'paul@globalfishingwatch.org'
 __source__ = 'https://github.com/GlobalFishingWatch/pipe-tools'

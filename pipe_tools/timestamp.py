@@ -196,7 +196,7 @@ class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
         super(SafeParseBeamBQStrTimestampDoFn, self).__init__()
 
     def process(self, element):
-        new_element = JSONDict(element)
+        new_element = element.copy()
         for f in self.fields:
             v = new_element.get(f)
             if v is not None:
