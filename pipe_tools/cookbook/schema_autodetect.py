@@ -15,7 +15,6 @@ from pipe_tools.generator import GenerateMessages
 from pipe_tools.generator import MessageGenerator
 from pipe_tools.io.bigquery import BigQueryWrapper
 from pipe_tools.io.bigquery import decode_table_ref
-from pipe_tools.coders import ReadAsJSONDict
 from pipe_tools.transforms.util import DoNothing
 
 # Bigquery Schema Autodetect

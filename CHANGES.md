@@ -8,7 +8,23 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+
+## 3.0.0 - (2019-03-27)
+
+
+### CHANGED
+
+**BREAKING CHANGE, Only compatible with 3.x pipelines**
+
+  * [#59] https://github.com/GlobalFishingWatch/pipe-tools/pull/59
+    * Update to work with Apache Beam 2.11.
+    * Partially automate creation of requirements list for setup.
+
 ### ADDED
+
+  * [#59] https://github.com/GlobalFishingWatch/pipe-tools/pull/59
+    * Beam requirements can now be imported from `pipe_tools.beam.requirements` 
+
 
 ## 2.0.0 - (2019-03-08)
 

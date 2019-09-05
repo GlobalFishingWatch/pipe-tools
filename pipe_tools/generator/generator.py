@@ -24,7 +24,7 @@ class MessageGenerator():
     def messages(self):
         ts = self.start_ts
         for idx in xrange(self.count):
-            yield JSONDict(mmsi=1, timestamp=ts, idx=idx)
+            yield dict(mmsi=1, timestamp=ts, idx=idx)
             ts += self.increment
 
     def bigquery_schema(self):

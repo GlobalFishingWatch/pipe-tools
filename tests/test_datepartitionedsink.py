@@ -25,7 +25,7 @@ class TestDatePartitionedSink():
         count = 24 * 3  # 3 days
         ts = start_ts
         for t in xrange(count):
-            yield JSONDict(mmsi=1, timestamp= ts)
+            yield dict(mmsi=1, timestamp= ts)
             ts += increment
 
     @pytest.mark.parametrize("shards_per_day", [1,2,3])
