@@ -54,7 +54,7 @@ def parse_table_schema(schema):
         # try to parse json into dict
         try:
             schema = ujson.loads(schema)
-        except ValueError, e:
+        except ValueError as e:
             pass
 
     if isinstance(schema, basestring):
