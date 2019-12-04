@@ -67,7 +67,7 @@ class PartitionedFileSink(FileBasedSink):
                  coder=JSONDictCoder(),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
-        self._do_sharding = not (shard_name_template == '')
+        self._do_sharding = (shard_name_template != '')
         super(PartitionedFileSink, self).__init__(
             file_path_prefix,
             file_name_suffix=file_name_suffix,
@@ -91,7 +91,7 @@ class PartitionedFileSink(FileBasedSink):
         if self._header is not None:
             file_handle.write(self._header)
             if self._append_trailing_newlines:
-                file_handle.write('\n')
+                file_handle.write(b'\n')
         return file_handle
 
     def display_data(self):
@@ -105,7 +105,7 @@ class PartitionedFileSink(FileBasedSink):
         """Writes a single encoded record."""
         file_handle.write(encoded_value)
         if self._append_trailing_newlines:
-            file_handle.write('\n')
+            file_handle.write(b'\n')
 
     def open_writer(self, init_result, uid):
         return PartitionedFileSinkWriter(self, pp.join(init_result, uid))
@@ -190,7 +190,7 @@ class PartitionedFileSink(FileBasedSink):
         except BeamIOError as exp:
             if exp.exception_details is None:
                 raise
-            for (src, dest), exception in exp.exception_details.iteritems():
+            for (src, dest), exception in six.iteritems(exp.exception_details):
                 if exception:
                     logging.warning('Rename not successful: %s -> %s, %s', src, dest,
                                     exception)

@@ -33,7 +33,6 @@ class TestCoders():
         coder = JSONDictCoder()
         for r in records:
             assert r == coder.decode(coder.encode(r))
-            assert ujson.dumps(r) == coder.encode(r)
 
     def test_type_hints(self):
 

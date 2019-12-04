@@ -21,15 +21,17 @@ class TestKeyPartitionedSink():
     def _sample_data(self, stringify, key='id', count=100):
         for vessel_id in six.moves.range(count):
             if stringify:
-                vessel_id = bytes(vessel_id, 'UTF-8')
-            yield dict(**{bytes(key, 'UTF-8'): vessel_id})
+                vessel_id = str(vessel_id)
+            if isinstance(key, six.text_type):
+                key = bytes(key, 'UTF-8')
+            yield {key: vessel_id}
 
     @pytest.mark.parametrize("stringify,key,count,shard_name_template", [
-        (False, 'id', 100, None),
-        (True, 'id', 100, None),
-        (True, 'boa', 100, None),
-        (True, 'id', 100, ''),
-        (True, 'id', 0, ''),
+        (False, b'id', 100, None),
+        (True, b'id', 100, None),
+        (True, b'boa', 100, None),
+        (True, b'id', 100, ''),
+        (True, b'id', 0, ''),
     ])
     def test_expected_shard_files(self, temp_dir, stringify, key, count, shard_name_template):
         file_path_base = temp_dir
@@ -46,7 +48,7 @@ class TestKeyPartitionedSink():
                                                            shard_name_template=shard_name_template)
 
             if shard_name_template is None:
-                expected = ['%s%s%s'% (pp.join(file_path_base, str(i), file_name_prefix),
+                expected = ["%s%s%s"% (pp.join(file_path_base, str(i), file_name_prefix),
                                    '-00000-of-00001', file_name_suffix) for i in range(count)]
             else:
                 # Of the form ..../shardN.json

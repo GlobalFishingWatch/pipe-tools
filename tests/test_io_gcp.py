@@ -2,6 +2,7 @@ import pytest
 import posixpath as pp
 import newlinejson as nlj
 import ujson
+import six
 
 import apache_beam as beam
 from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
@@ -14,6 +15,14 @@ from pipe_tools.io.gcp import GCPSource
 from pipe_tools.io.gcp import GCPSink
 from pipe_tools.generator import GenerateMessages
 from pipe_tools.generator import MessageGenerator
+
+def fix_keys(d):
+    """We want our dicts to always be keyed by bytes
+
+    This is for beam compatibility, but json doesn't roundtrip bytes.
+    """
+    return {six.ensure_binary(k) : v for (k, v) in d.items()}
+
 
 
 @pytest.mark.filterwarnings('ignore::FutureWarning')
@@ -41,7 +50,9 @@ class Test_IO_GCP:
         print(messages[0])
         with open_shards('%s*' % dest) as output:
             assert (sorted(messages, key=lambda x:x[b'timestamp']) == 
-                    sorted(nlj.load(output), key=lambda x:x['timestamp']))
+                    sorted(
+                        [fix_keys(d) for d in nlj.load(output)], 
+                          key=lambda x:x[b'timestamp']))
 
 
     def test_gcp_source(self, temp_dir):

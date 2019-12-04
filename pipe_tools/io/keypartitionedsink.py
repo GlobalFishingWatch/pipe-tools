@@ -82,5 +82,5 @@ class KeyShardDoFn(beam.DoFn):
 class KeyPartitionedFileSink(PartitionedFileSink):
     def _encode_key(self, key):
         """convert an id to a string representation"""
-        return key
+        return str(key)
 
