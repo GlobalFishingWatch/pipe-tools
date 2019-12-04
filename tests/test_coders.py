@@ -1,4 +1,5 @@
 import pytest
+import six
 import ujson
 
 import apache_beam as beam
@@ -39,7 +40,10 @@ class TestCoders():
         messages = MessageGenerator()
 
         source = beam.Create(messages)
-        assert source.get_output_type() == Dict[str, Union[float, int]], (source.get_output_type(), JSONDict)
+        assert source.get_output_type() == Dict[six.binary_type, Union[float, int]]
+        # Old result, may need for Python 2.0: TODO: check and remove
+        # assert source.get_output_type() == (Dict[six.binary_type, Union[float, int]], 
+        #                                          (source.get_output_type(), JSONDict))
 
         with _TestPipeline() as p:
             result = (

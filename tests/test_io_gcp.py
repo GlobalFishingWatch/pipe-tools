@@ -1,6 +1,7 @@
 import pytest
 import posixpath as pp
 import newlinejson as nlj
+import ujson
 
 import apache_beam as beam
 from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
@@ -37,15 +38,17 @@ class Test_IO_GCP:
             ( p | beam.Create(messages) | GCPSink(dest) )
         p.run()
 
+        print(messages[0])
         with open_shards('%s*' % dest) as output:
-            assert sorted(messages) == sorted(nlj.load(output))
+            assert (sorted(messages, key=lambda x:x[b'timestamp']) == 
+                    sorted(nlj.load(output), key=lambda x:x['timestamp']))
 
 
     def test_gcp_source(self, temp_dir):
         expected = list(MessageGenerator().messages())
         source = pp.join(temp_dir, 'messages.json')
         with open(source, 'w') as f:
-            nlj.dump(expected, f)
+            nlj.dump(expected, f, json_lib=ujson)
 
         with _TestPipeline() as p:
             messages = p | GCPSource(source)

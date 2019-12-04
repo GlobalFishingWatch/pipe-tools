@@ -20,5 +20,5 @@ class TestGenerator():
         messages = list(message_generaator)
 
         assert len(messages) == message_generaator.count
-        assert messages[0]['timestamp'] == message_generaator.start_ts
+        assert messages[0][b'timestamp'] == message_generaator.start_ts
 

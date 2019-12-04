@@ -223,7 +223,8 @@ class PartitionedFileSink(FileBasedSink):
         num_threads = max(1, min_threads)
 
         batch_size = FileSystems.get_chunk_size(file_path_prefix)
-        batches = [path_pairs[i:i + batch_size] for i in xrange(0, len(path_pairs), batch_size)]
+        batches = [path_pairs[i:i + batch_size] for i in 
+                        six.moves.range(0, len(path_pairs), batch_size)]
 
         logging.info(
             'Starting finalize_write threads with num_shards: %d, '

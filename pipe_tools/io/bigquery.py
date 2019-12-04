@@ -1,5 +1,6 @@
 import ujson
 import uuid
+import six
 from datetime import datetime
 
 import apache_beam as beam
@@ -50,14 +51,14 @@ def parse_table_schema(schema):
         return schema
     elif isinstance(schema, bq.TableSchema):
         return schema
-    elif isinstance(schema, basestring):
+    elif isinstance(schema, six.string_types):
         # try to parse json into dict
         try:
             schema = ujson.loads(schema)
         except ValueError as e:
             pass
 
-    if isinstance(schema, basestring):
+    if isinstance(schema, six.string_types):
         # if it is still a string, then it must not be json.  Assume it is string representation
         return WriteToBigQuery.get_table_schema_from_string(schema)
     elif isinstance(schema, dict):
@@ -162,7 +163,7 @@ class QueryHelper:
 
     @staticmethod
     def _date_to_sql_timestamp(date, use_legacy_sql=True):
-        if isinstance(date, basestring):
+        if isinstance(date, six.string_types):
             return 'TIMESTAMP({})'.format(date)
         elif isinstance(date, datetime):
             timestamp = timestampFromDatetime(date)

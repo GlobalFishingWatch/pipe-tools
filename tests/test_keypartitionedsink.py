@@ -1,6 +1,7 @@
 import posixpath as pp
 
 import pytest
+import six
 from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
 from apache_beam.testing.util import assert_that
 from apache_beam.testing.util import equal_to
@@ -18,10 +19,10 @@ class TestKeyPartitionedSink():
     """
 
     def _sample_data(self, stringify, key='id', count=100):
-        for vessel_id in xrange(count):
+        for vessel_id in six.moves.range(count):
             if stringify:
-                vessel_id = str(vessel_id)
-            yield dict(**{key: vessel_id})
+                vessel_id = bytes(vessel_id, 'UTF-8')
+            yield dict(**{bytes(key, 'UTF-8'): vessel_id})
 
     @pytest.mark.parametrize("stringify,key,count,shard_name_template", [
         (False, 'id', 100, None),
