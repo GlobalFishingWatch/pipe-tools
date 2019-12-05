@@ -47,7 +47,6 @@ class Test_IO_GCP:
             ( p | beam.Create(messages) | GCPSink(dest) )
         p.run()
 
-        print(messages[0])
         with open_shards('%s*' % dest) as output:
             assert (sorted(messages, key=lambda x:x[b'timestamp']) == 
                     sorted(

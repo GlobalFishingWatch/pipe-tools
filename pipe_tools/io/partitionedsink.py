@@ -144,7 +144,7 @@ class PartitionedFileSink(FileBasedSink):
         for key, shards in six.iteritems(shards_by_key):
             encoded_key = self._encode_key(key)
             if self._do_sharding:
-                dest_path = pp.join(file_path, six.ensure_str(encoded_key))
+                dest_path = pp.join(file_path, str(encoded_key))
 
                 shards = sorted(shards)
                 num_shards = len(shards)
