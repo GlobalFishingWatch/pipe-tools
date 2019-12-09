@@ -109,18 +109,18 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
         client = BigQueryWrapper()
 
         # start an async load table job for each date
-        waiting_jobs=set(self._load_tables(client, shard_paths))
+        waiting_jobs={j[0] : j for j in self._load_tables(client, shard_paths)}
 
         # wait for jobs to finish
         while waiting_jobs:
             logging.info('Waiting for %s bigquery tables to load...', len(waiting_jobs))
-            completed_jobs = set()
-            for job in waiting_jobs:
+            completed_job_ids = set()
+            for job in waiting_jobs.values():
                 job_id, table_ref, date_ts = job
                 table_str = encode_table_ref(table_ref, True)
                 response = client.get_job_status(self.project_id, job_id)
                 if response.status.state == "DONE":
-                    completed_jobs.add(job)
+                    completed_job_ids.add(job_id)
                     if response.status.errorResult:
                         logging.error('Bigquery table load failed for %s', table_str)
                         for error in response.status.errors:
@@ -135,7 +135,8 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
                     #  Not done yet...
                     logging.debug('Bigquery table load status %s - %s' % (table_str, response.status.state))
 
-            waiting_jobs -= completed_jobs
+            for job_id in completed_job_ids:
+                waiting_jobs.pop(job_id)
             time.sleep(1.0) # wait for a bit and then check again
             continue
 
