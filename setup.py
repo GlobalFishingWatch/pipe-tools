@@ -19,7 +19,8 @@ DEPENDENCIES = [
     "python-dateutil",
     "pytz",
     "udatetime",
-    "ujson"
+    "ujson",
+    "six>=1.12"
 ]
 
 SCRIPTS = [

@@ -1,2 +1,2 @@
-from generator import MessageGenerator
-from generator import GenerateMessages
+from .generator import MessageGenerator
+from .generator import GenerateMessages

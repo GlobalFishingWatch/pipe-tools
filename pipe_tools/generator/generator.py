@@ -1,5 +1,6 @@
 from datetime import datetime
 import pytz
+import six
 
 import apache_beam as beam
 from apache_beam import typehints
@@ -23,8 +24,8 @@ class MessageGenerator():
 
     def messages(self):
         ts = self.start_ts
-        for idx in xrange(self.count):
-            yield dict(mmsi=1, timestamp=ts, idx=idx)
+        for idx in six.moves.range(self.count):
+            yield {b'mmsi':1, b'timestamp':ts, b'idx': idx}
             ts += self.increment
 
     def bigquery_schema(self):

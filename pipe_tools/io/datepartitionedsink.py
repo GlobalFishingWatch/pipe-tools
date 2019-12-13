@@ -1,4 +1,5 @@
 import random
+import six
 import warnings
 
 from .partitionedsink import WritePartitionedFiles
@@ -70,7 +71,7 @@ class DateShardDoFn(beam.DoFn):
 
     def process(self, element, timestamp=beam.DoFn.TimestampParam):
         # get the timestamp at the start of the day that contains this element
-        date = (int(timestamp) / SECONDS_IN_DAY) * SECONDS_IN_DAY
+        date = (int(timestamp) // SECONDS_IN_DAY) * SECONDS_IN_DAY
         shard = self.shard_counter
 
         self.shard_counter += 1

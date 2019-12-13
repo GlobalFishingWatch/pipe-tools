@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import date
 import pytz
+import six
 from dateutil.parser import parse as dateutil_parse
 
 from apache_beam.utils.timestamp import Timestamp
@@ -27,7 +28,7 @@ def as_timestamp(d):
         return timestampFromDatetime(pytz.UTC.localize(datetime.combine(d, datetime.min.time())))
     elif isinstance(d, (float, int, Timestamp)):
         return float(d)
-    elif isinstance(d, basestring):
+    elif isinstance(d, six.string_types):
         return as_timestamp(dateutil_parse(d))
     else:
         raise ValueError ('Unsupported data type. Unable to convert value "%s" to to a timestamp' % d)
