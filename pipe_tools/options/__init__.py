@@ -1,7 +1,7 @@
-from actions import ReadFileAction
-from actions import LoadFromFileAction
-from actions import ReadJSONAction
+from .actions import ReadFileAction
+from .actions import LoadFromFileAction
+from .actions import ReadJSONAction
 
-from logging_options import LoggingOptions
+from .logging_options import LoggingOptions
 
-from validate import validate_options
+from .validate import validate_options

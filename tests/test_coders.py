@@ -1,4 +1,5 @@
 import pytest
+import six
 import ujson
 
 import apache_beam as beam
@@ -32,14 +33,13 @@ class TestCoders():
         coder = JSONDictCoder()
         for r in records:
             assert r == coder.decode(coder.encode(r))
-            assert ujson.dumps(r) == coder.encode(r)
 
     def test_type_hints(self):
 
         messages = MessageGenerator()
 
         source = beam.Create(messages)
-        assert source.get_output_type() == Dict[str, Union[float, int]], (source.get_output_type(), JSONDict)
+        assert source.get_output_type() == Dict[six.binary_type, Union[float, int]]
 
         with _TestPipeline() as p:
             result = (

@@ -1,4 +1,5 @@
 import posixpath as pp
+import six
 
 import pytest
 from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
@@ -24,8 +25,8 @@ class TestDatePartitionedSink():
         increment = 60 * 60  # 1 hour
         count = 24 * 3  # 3 days
         ts = start_ts
-        for t in xrange(count):
-            yield dict(mmsi=1, timestamp= ts)
+        for t in six.moves.range(count):
+            yield {b'mmsi' : 1, b'timestamp' :  ts}
             ts += increment
 
     @pytest.mark.parametrize("shards_per_day", [1,2,3])
@@ -38,7 +39,7 @@ class TestDatePartitionedSink():
         file_name_suffix = '.json'
 
         messages = list(self._sample_data())
-        dates = {datetimeFromTimestamp(msg['timestamp']).strftime(DatePartitionedFileSink.DATE_FORMAT)
+        dates = {datetimeFromTimestamp(msg[b'timestamp']).strftime(DatePartitionedFileSink.DATE_FORMAT)
                  for msg in messages}
 
         with _TestPipeline() as p:
@@ -47,7 +48,7 @@ class TestDatePartitionedSink():
             messages = (
                 p
                 | beam.Create(messages)
-                | beam.Map(lambda msg: (TimestampedValue(msg, msg['timestamp'])))
+                | beam.Map(lambda msg: (TimestampedValue(msg, msg[b'timestamp'])))
             )
 
             result = messages | writer

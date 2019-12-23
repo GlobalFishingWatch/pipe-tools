@@ -8,6 +8,16 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## 3.1.0 - (2019-12-13)
+
+### Changed
+
+  * [GFW-Tasks#59](https://github.com/GlobalFishingWatch/pipe-tools/pull/59): Changes
+    so that pipe-tools works on both Python 2 and Python 3. These include:
+    * Absolute import fixes.
+    * Replacing print statement with print function.
+    * Division => floor division fixes.
+    * Dealing with `bytes/str/unicode` issues.
 
 ## 3.0.0 - (2019-03-27)
 

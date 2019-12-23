@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import udatetime
 import pytz
+import six
 
 import apache_beam as beam
 from apache_beam.transforms.window import TimestampedValue
@@ -159,7 +160,7 @@ class ParseBeamBQStrTimestampDoFn(beam.DoFn):
     """
     def __init__(self, fields=['timestamp']):
         self._fields = fields
-        if isinstance(self._fields, basestring):
+        if isinstance(self._fields, six.string_types):
             self._fields = [self._fields]
         super(ParseBeamBQStrTimestampDoFn, self).__init__()
 
@@ -191,7 +192,7 @@ class SafeParseBeamBQStrTimestampDoFn(beam.DoFn):
 
     def __init__(self, fields=['timestamp']):
         self.fields = fields
-        if isinstance(self.fields, basestring):
+        if isinstance(self.fields, six.string_types):
             self.fields = [self.fields]
         super(SafeParseBeamBQStrTimestampDoFn, self).__init__()
 
