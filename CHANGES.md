@@ -8,6 +8,13 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## 3.1.1 - (2019-03-09)
+
+### Changed
+
+  * [GlobalFishingWatch/gfw-eng-tasks#27](https://github.com/GlobalFishingWatch/gfw-eng-tasks/issues/27): Changes
+    pins ujson library to version 1.35.
+
 ## 3.1.0 - (2019-12-13)
 
 ### Changed
