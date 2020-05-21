@@ -21,7 +21,7 @@ def fix_keys(d):
 
     This is for beam compatibility, but json doesn't roundtrip bytes.
     """
-    return {six.ensure_binary(k) : v for (k, v) in d.items()}
+    return {six.ensure_binary(k) : v for (k, v) in list(d.items())}
 
 
 

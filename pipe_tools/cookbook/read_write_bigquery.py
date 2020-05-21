@@ -82,7 +82,7 @@ def run(args=None):
     # if no arguments given, display usage
     args = args or ['--help']
     options = MyPipelineOptions(args)
-    print "Writing from bigquery and writing to {}".format(options.output_table)
+    print("Writing from bigquery and writing to {}".format(options.output_table))
 
     pipeline = build_pipeline(options)
     result = pipeline.run()
