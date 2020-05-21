@@ -1,6 +1,6 @@
 from six.moves.urllib.parse import quote as url_quote
 import posixpath as pp
-from . import uuid
+import uuid
 
 
 class GFW_UUID:
