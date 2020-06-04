@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3.7
 
 RUN mkdir -p /opt/project
 WORKDIR /opt/project

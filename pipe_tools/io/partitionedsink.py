@@ -181,7 +181,7 @@ class PartitionedFileSink(FileBasedSink):
     def _rename_batch(batch):
         """_rename_batch executes batch rename operations."""
 
-        source_files, destination_files = zip(*batch)
+        source_files, destination_files = list(zip(*batch))
         exceptions = []
         try:
             FileSystems.rename(source_files, destination_files)

@@ -102,7 +102,7 @@ def run(args=None):
     args = args or ['--help']
     options = MyPipelineOptions(args)
 
-    print "Reading schema from {} ...".format(options.source_table)
+    print("Reading schema from {} ...".format(options.source_table))
     pipeline = build_pipeline(options)
     result = pipeline.run()
     if options.wait:

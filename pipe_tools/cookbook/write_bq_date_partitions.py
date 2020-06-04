@@ -72,7 +72,7 @@ def run(args=None):
     # if no arguments given, display usage
     args = args or ['--help']
     options = MyPipelineOptions(args)
-    print "Writing {} messages to {}".format(options.count, options.output_table)
+    print("Writing {} messages to {}".format(options.count, options.output_table))
 
     pipeline = build_pipeline(options)
     job = pipeline.run()

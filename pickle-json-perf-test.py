@@ -26,24 +26,24 @@ pickle_str = pickle.dumps(d)
 
 n=1000000
 
-print "Runing perf tests with %s iterations..." % n
+print("Runing perf tests with %s iterations..." % n)
 start = time.time()
-for i in xrange(n):
+for i in range(n):
   d = pickle.loads(pickle_str)
-print "%s pickle.loads" % (time.time() - start)
+print("%s pickle.loads" % (time.time() - start))
 
 start = time.time()
-for i in xrange(n):
+for i in range(n):
   d = json.loads(json_str)
-print "%s json.loads " % ( time.time() - start)
+print("%s json.loads " % ( time.time() - start))
 
 start = time.time()
-for i in xrange(n):
+for i in range(n):
   d = ujson.loads(json_str)
-print "%s ujson.loads" % (time.time() - start)
+print("%s ujson.loads" % (time.time() - start))
 
 start = time.time()
-for i in xrange(n):
+for i in range(n):
   d = ujson.loads(json_str)
   m = Message(d)
-print "%s ujson.loads with assignment" % (time.time() - start)
+print("%s ujson.loads with assignment" % (time.time() - start))
