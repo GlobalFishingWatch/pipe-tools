@@ -30,7 +30,7 @@ class TestTimestampTools():
 
 
     def test_ParseBeamBQStrTimestamp(self):
-        r = range(10)
+        r = list(range(10))
         source = [{'timestamp':beambqstrFromTimestamp(t)} for t in r] + [{'timestamp':None}]
         expected = [{'timestamp':t} for t in r]+ [{'timestamp':None}]
         timestamp_fields = 'timestamp'

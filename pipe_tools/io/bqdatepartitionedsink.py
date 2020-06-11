@@ -115,7 +115,7 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
         while waiting_jobs:
             logging.info('Waiting for %s bigquery tables to load...', len(waiting_jobs))
             completed_job_ids = set()
-            for job in waiting_jobs.values():
+            for job in list(waiting_jobs.values()):
                 job_id, table_ref, date_ts = job
                 table_str = encode_table_ref(table_ref, True)
                 response = client.get_job_status(self.project_id, job_id)

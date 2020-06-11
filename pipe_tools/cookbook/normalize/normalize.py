@@ -1,7 +1,5 @@
 """Copies from one BigQuery table to another and normalizes the shipname and callsign fields"""
 
-from __future__ import absolute_import
-
 import logging
 import sys
 
@@ -77,7 +75,7 @@ class NormalizeNamesDoFn(beam.DoFn):
 
 def parse_date_range(s):
     # parse a string YYYY-MM-DD,YYYY-MM-DD into 2 timestamps
-    return map(as_timestamp, s.split(','))
+    return list(map(as_timestamp, s.split(',')))
 
 
 def run(args=None):

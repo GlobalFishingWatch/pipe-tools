@@ -1,7 +1,5 @@
 """Copies from one file to another and appends a code to every line."""
 
-from __future__ import absolute_import
-
 import argparse
 import logging
 import re

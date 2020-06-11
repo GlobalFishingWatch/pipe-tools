@@ -19,12 +19,12 @@ def normalize_shipname(name):
 
     ## remove nasty charcters, white space
     try:
-        name = unidecode(unicode(name))  # get rid of nasty characters, but sometimes this fails
+        name = unidecode(str(name))  # get rid of nasty characters, but sometimes this fails
     except:
         try:
-            name = unidecode(unicode(name.decode('utf8')))
+            name = unidecode(str(name.decode('utf8')))
         except:
-            name = unidecode(unicode(name.decode('iso_8859-1')))
+            name = unidecode(str(name.decode('iso_8859-1')))
 
     name = re.sub('\s+', ' ', name)
     name = name.strip()
@@ -134,12 +134,12 @@ def normalize_callsign(callsign):
 
     ## remove nasty charcters, white space
     try:
-        callsign = unidecode(unicode(callsign))  # get rid of nasty characters, but sometimes this fails
+        callsign = unidecode(str(callsign))  # get rid of nasty characters, but sometimes this fails
     except:
         try:
-            callsign = unidecode(unicode(callsign.decode('utf8')))
+            callsign = unidecode(str(callsign.decode('utf8')))
         except:
-            callsign = unidecode(unicode(callsign.decode('iso_8859-1')))
+            callsign = unidecode(str(callsign.decode('iso_8859-1')))
 
     callsign = callsign.strip()
     callsign = re.sub('\s+', ' ', callsign)

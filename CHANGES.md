@@ -8,6 +8,19 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## 3.1.2 - (2020-06-11)
+
+### Added
+
+  * [GlobalFishingWatch/gfw-eng-tasks#110](https://github.com/GlobalFishingWatch/gfw-eng-tasks/issues/110): Adds
+    * use the `rsa:4.0` version instead of `rsa:4.1`.
+
+### Changed
+
+  * [GlobalFishingWatch/gfw-eng-tasks#41](https://github.com/GlobalFishingWatch/gfw-eng-tasks/issues/41): Changes
+   * Supports only python 3.7.
+   * Convert the code to use only python 3 sytax.
+
 ## 3.1.1 - (2019-03-09)
 
 ### Changed
