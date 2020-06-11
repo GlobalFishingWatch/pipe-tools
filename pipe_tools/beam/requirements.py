@@ -19,6 +19,7 @@ To update the dependencies:
 beam_version = "2.16.0"
 
 beam_requirement_text = """
+rsa==4.0
 avro-python3    >=1.8.1,<2.0.0; python_version >= "3.0"
 avro    >=1.8.1,<2.0.0; python_version < "3.0"
 cachetools  >=3.1.0,<4
