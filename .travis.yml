@@ -1,18 +1,25 @@
 language: python
 
+sudo: required
+
+services:
+  - docker
+
 cache:
   directories:
   - ~/.cache/pip
 
 python:
-- 2.7
 - 3.7
 
 install:
 - pip install -e .
+- docker-compose build
 
 script:
 - py.test tests
+- docker-compose --version
+- docker-compose run test
 
 notifications:
   slack:

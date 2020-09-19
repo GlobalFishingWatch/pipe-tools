@@ -14,5 +14,13 @@ You can find the registry of changes in the `CHANGES.md` file.
 
 Every time you want to make a change in this repo, please run the test or generate the proper ones.
 
-To Run unit tests use the following
-  `docker-compose run tests`
+## Developing
+
+```console
+virtualenv venv
+source venv/bin/activate
+pip install -e .
+py.test tests
+docker-compose run test
+```
+
