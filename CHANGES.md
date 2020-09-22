@@ -8,6 +8,11 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+  * [GlobalFishingWatch/pipe-tools#68](https://github.com/GlobalFishingWatch/pipe-tools/issues/68): Changes
+    * use  `apache-beam:2.24.0` instead of `apache-beam:2.16.0`.
+    * update corresponding apache beam pinned dependencies.
+    * preserve override of `rsa:4.0` from release `3.1.2`
+
 ## 3.1.3 - (2020-11-04)
 
 ### Added
