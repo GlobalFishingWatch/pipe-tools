@@ -8,6 +8,13 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## 3.1.3 - (2020-11-04)
+
+### Added
+
+  * [Data Pipeline/PIPELINE-229](https://globalfishingwatch.atlassian.net/browse/PIPELINE-229): Adds
+    * Predicate for apache_beam.testing.util.assert_that with floating tolerance.
+
 ## 3.1.2 - (2020-06-11)
 
 ### Added
