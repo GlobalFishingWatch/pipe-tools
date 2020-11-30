@@ -14,6 +14,7 @@ from setuptools import setup
 DEPENDENCIES = [
     "newlinejson",
     "nose",
+    "packaging==20.4",
     "pytest",
     "python-dateutil",
     "pytz",
