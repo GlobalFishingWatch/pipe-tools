@@ -28,7 +28,7 @@ pipeline. No other dependency is required.
 
 Run the unit tests
 ```console
-docker-compose run py.test
+docker-compose run test
 ```
 
 If you change any python dependencies, you will need to re-build with
