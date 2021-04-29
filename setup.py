@@ -22,7 +22,7 @@ DEPENDENCIES = [
     # "python-dateutil",
     # "pytz",
     "udatetime",
-    "ujson",
+    "ujson==1.35",
     "six>=1.12"
 ]
 
