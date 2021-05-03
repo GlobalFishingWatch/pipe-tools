@@ -8,6 +8,8 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## 3.2.0 - 2021-05-02
+
   * [PIPELINE-84](https://globalfishingwatch.atlassian.net/browse/PIPELINE-84): Changes
     add support for Apache Beam `2.28.0`.
 
