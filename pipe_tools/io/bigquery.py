@@ -6,7 +6,7 @@ from datetime import datetime
 import apache_beam as beam
 from apache_beam import PTransform
 from apache_beam.io.gcp.bigquery import WriteToBigQuery
-from apache_beam.io.gcp.bigquery import parse_table_schema_from_json
+from apache_beam.io.gcp.bigquery_tools import parse_table_schema_from_json
 import apache_beam.io.gcp.internal.clients.bigquery as bq
 from apache_beam.utils import retry
 from apache_beam.io.gcp.internal.clients.bigquery import TableSchema
