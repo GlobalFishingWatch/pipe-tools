@@ -8,6 +8,13 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+
+## 3.2.1 - 2021-06-23
+
+  * [PIPELINE-430](https://globalfishingwatch.atlassian.net/browse/PIPELINE-430): Changes
+    uses cloudbuild instead of Travis.
+    Updates Beam reference of parse_table_schema_from_json in bigquery.
+
 ## 3.2.0 - 2021-05-02
 
   * [PIPELINE-84](https://globalfishingwatch.atlassian.net/browse/PIPELINE-84): Changes

@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/GlobalFishingWatch/pipe-tools.svg?branch=master)](https://travis-ci.org/GlobalFishingWatch/pipe-tools)
-
 # pipe-tools
 
 It is a package providing [Dataflow](https://cloud.google.com/dataflow/) pipeline tools and utilities.

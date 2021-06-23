@@ -1,0 +1,25 @@
+steps:
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: build
+  args: [
+    'build',
+    '-t',
+    'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:latest',
+    '-t',
+    'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:$TAG_NAME',
+    '.'
+  ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: test
+  args: [
+    'run',
+    '--rm',
+    '--entrypoint',
+    '/usr/local/bin/py.test',
+    'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:latest'
+  ]
+  waitFor: [ 'build' ]
+
+timeout: 600s
