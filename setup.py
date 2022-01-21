@@ -16,14 +16,14 @@ PACKAGE_NAME = "pipe-tools"
 package = __import__("pipe_tools")
 
 DEPENDENCIES = [
-    "newlinejson",
-    # "nose",
-    "pytest",
-    # "python-dateutil",
-    # "pytz",
-    "udatetime",
-    "ujson==1.35",
-    "six>=1.12",
+    # "newlinejson",
+    # # "nose",
+    # "pytest",
+    # # "python-dateutil",
+    # # "pytz",
+    # "udatetime",
+    # "ujson",  # ==1.35",
+    # "six>=1.12",
 ]
 
 SCRIPTS = [
