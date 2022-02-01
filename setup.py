@@ -26,11 +26,6 @@ DEPENDENCIES = [
     "six>=1.12"
 ]
 
-SCRIPTS = [
-    'bin/pipe-tools-utils',
-    'bin/xdaterange',
-]
-
 with codecs.open('README.md', encoding='utf-8') as f:
     readme = f.read().strip()
 
@@ -47,6 +42,5 @@ setup(
     packages=find_packages(exclude=['test*.*', 'tests']),
     url=package.__source__,
     version=package.__version__,
-    zip_safe=True,
-    scripts=SCRIPTS
+    zip_safe=True
 )
