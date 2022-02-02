@@ -17,13 +17,11 @@ package = __import__('pipe_tools')
 
 DEPENDENCIES = [
     "newlinejson",
-    # "nose",
     "pytest",
-    # "python-dateutil",
-    # "pytz",
     "udatetime",
-    "ujson==1.35",
-    "six>=1.12"
+    "ujson",
+    "six",
+    "mock"
 ]
 
 with codecs.open('README.md', encoding='utf-8') as f:

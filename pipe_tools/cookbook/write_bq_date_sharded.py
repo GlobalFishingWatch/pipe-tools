@@ -10,7 +10,7 @@ from apache_beam.io import WriteToText
 from pipe_tools.generator import GenerateMessages
 from pipe_tools.generator import MessageGenerator
 from pipe_tools.timestamp import TimestampedValueDoFn
-from pipe_tools.io import WriteToBigQueryDatePartitioned
+from pipe_tools.io import WriteToBigQueryDateSharded
 
 
 # Write to Date Partitioned Files
@@ -58,7 +58,7 @@ def build_pipeline(options):
     # date partitioning is based on the timestamp used for windowing
     messages = messages | "AddTimestampedValue" >> beam.ParDo(TimestampedValueDoFn())
 
-    messages | "WriteDatePartitions" >> WriteToBigQueryDatePartitioned(
+    messages | "WriteDateSharded" >> WriteToBigQueryDateSharded(
         temp_gcs_location=temp_gcs_location,
         table=options.output_table,
         schema=schema,

@@ -6,7 +6,7 @@ import apache_beam as beam
 from apache_beam.options.pipeline_options import StandardOptions, TypeOptions, GoogleCloudOptions
 
 from pipe_tools.timestamp import TimestampedValueDoFn
-from pipe_tools.io import WriteToBigQueryDatePartitioned
+from pipe_tools.io import WriteToBigQueryDateSharded
 from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
 from pipe_tools.options import ReadFileAction
 
@@ -67,7 +67,7 @@ def build_pipeline(options):
         | "ReadFromBigQuery" >> beam.io.Read(source)
         | "ConvertTimestamp" >> beam.ParDo(ParseBeamBQStrTimestampDoFn())
         | "AddTimestampedValue" >> beam.ParDo(TimestampedValueDoFn())
-        | "WriteDatePartitions" >> WriteToBigQueryDatePartitioned(
+        | "WriteDateSharded" >> WriteToBigQueryDateSharded(
             temp_gcs_location=temp_gcs_location,
             table=options.output_table,
             schema=options.schema,
