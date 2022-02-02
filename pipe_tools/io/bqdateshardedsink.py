@@ -23,11 +23,10 @@ from pipe_tools.io.bigquery import decode_table_ref
 DEFAULT_TEMP_SHARDS_PER_DAY=16
 
 
-class WriteToBigQueryDatePartitioned(WriteToDatePartitionedFiles):
+class WriteToBigQueryDateSharded(WriteToDatePartitionedFiles):
     """
-    Write the incoming pcoll to a bigquery table partitioned by date.  The date is taken from the
-    TimestampedValue associated with each element.
-
+    Write the incoming pcoll to a bigquery table sharded by date.  The date is
+    taken from the TimestampedValue associated with each element.
     """
 
     def __init__(self, temp_gcs_location, table, dataset=None, project=None, schema=None,
@@ -35,11 +34,11 @@ class WriteToBigQueryDatePartitioned(WriteToDatePartitionedFiles):
                  write_disposition=BigQueryDisposition.WRITE_EMPTY,
                  test_client=None, temp_shards_per_day=None):
 
-        super(WriteToBigQueryDatePartitioned, self).__init__(
+        super(WriteToBigQueryDateSharded, self).__init__(
             file_path_prefix='notused', shards_per_day=temp_shards_per_day,
         )
 
-        self._sink = BigQueryDatePartitionedSink(temp_gcs_location, table, dataset=dataset,
+        self._sink = BigQueryDateShardedSink(temp_gcs_location, table, dataset=dataset,
                                                  project=project, schema=schema,
                                                  create_disposition=create_disposition,
                                                  write_disposition=write_disposition,
@@ -47,7 +46,7 @@ class WriteToBigQueryDatePartitioned(WriteToDatePartitionedFiles):
                                                  temp_shards_per_day=temp_shards_per_day)
 
 
-class BigQueryDatePartitionedSink(DatePartitionedFileSink):
+class BigQueryDateShardedSink(DatePartitionedFileSink):
     DATE_FORMAT='%Y%m%d'
 
     def __init__(self, temp_gcs_location, table, dataset=None, project=None, schema=None,
@@ -66,7 +65,7 @@ class BigQueryDatePartitionedSink(DatePartitionedFileSink):
         self.create_disposition = create_disposition
         self.write_disposition = write_disposition
 
-        super(BigQueryDatePartitionedSink, self).__init__(
+        super(BigQueryDateShardedSink, self).__init__(
             file_path_prefix=pp.join(temp_gcs_location, 'shard'),
             file_name_suffix='.json'
         )

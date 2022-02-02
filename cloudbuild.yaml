@@ -22,4 +22,20 @@ steps:
   ]
   waitFor: [ 'build' ]
 
+- name: 'gcr.io/cloud-builders/docker'
+  id: push_latest
+  args: [
+    'push',
+    'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:latest'
+  ]
+  waitFor: [ 'build', 'test' ]
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: push_tagged
+  args: [
+    'push',
+    'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:$TAG_NAME'
+  ]
+  waitFor: [ 'build', 'test' ]
+
 timeout: 600s

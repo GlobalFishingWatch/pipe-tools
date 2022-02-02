@@ -15,7 +15,7 @@ from apache_beam.io.gcp.bigquery import BigQueryDisposition
 
 from pipe_tools.utils.timestamp import as_timestamp
 from pipe_tools.io.bigquery import QueryHelper
-from pipe_tools.io import WriteToBigQueryDatePartitioned
+from pipe_tools.io import WriteToBigQueryDateSharded
 from pipe_tools.timestamp import TimestampedValueDoFn
 from pipe_tools.timestamp import ParseBeamBQStrTimestampDoFn
 
@@ -109,7 +109,7 @@ def run(args=None):
       | "ConvertTimestamp" >> beam.ParDo(ParseBeamBQStrTimestampDoFn())
       | "AddTimestamp" >> beam.ParDo(TimestampedValueDoFn())
       | "NormalizeNames" >> beam.ParDo(NormalizeNamesDoFn())
-      | "WriteDest" >> WriteToBigQueryDatePartitioned(
+      | "WriteDest" >> WriteToBigQueryDateSharded(
           temp_gcs_location=gcp_options.temp_location,
           table=normalize_options.dest_table,
           schema=dest_schema,
