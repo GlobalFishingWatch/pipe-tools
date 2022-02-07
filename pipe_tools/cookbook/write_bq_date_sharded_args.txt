@@ -1,6 +1,0 @@
---runner=DirectRunner
---setup_file=../../setup.py
---output-table=PROJECT:DATASET.TABLE_PREFIX
---project=PROJECT
---temp_location=gs://BUCKETdataflow-temp/
---staging_location=gs://BUCKET/dataflow-staging/
