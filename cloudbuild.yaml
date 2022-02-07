@@ -6,8 +6,6 @@ steps:
     'build',
     '-t',
     'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:latest',
-    '-t',
-    'gcr.io/$PROJECT_ID/github-globalfishingwatch-pipe-tools:$TAG_NAME',
     '.'
   ]
 
