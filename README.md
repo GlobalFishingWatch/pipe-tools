@@ -1,35 +1,7 @@
-# pipe-tools
+# *DEPRECATED* pipe-tools
 
-It is a package providing [Dataflow](https://cloud.google.com/dataflow/) pipeline tools and utilities.
+Package providing [Apache Beam](https://beam.apache.org/) pipeline tools and utilities useful for some of our older Beam pipelines at Global Fishing Watch. If you are writing a new pipeline, chances are most of these utilities are already supported by the core beam libraries, and you shouldn't be adding this dependency anymore.
 
-## Usage
+## Development
 
-The `pipe-tools` module provides the Dataflow tools build for GFW purposes.
-It contains the tools to interpret the JSONDict when the Dataflow analyse them.
-Defines the options for GFW pipelines. Handle the way how to read and write over BigQuery. Utils in the transformations and tools for handling date formats and generates universal unique identifiers.
-
-You can find the registry of changes in the `CHANGES.md` file.
-
-Every time you want to make a change in this repo, please run the test or generate the proper ones.
-
-Build/rebuild docker image with
-  `docker-compose build`
-
-To Run unit tests use the following
-  `docker-compose run test`
-
-## Development and Testing
-
-You just need [docker](https://www.docker.com/) and
-[docker-compose](https://docs.docker.com/compose/) in your machine to run the
-pipeline. No other dependency is required.
-
-Run the unit tests
-```console
-docker-compose run test
-```
-
-If you change any python dependencies, you will need to re-build with
-```console
-docker-compose build
-```
+You just need [docker](https://www.docker.com/) and [docker-compose](https://docs.docker.com/compose/) in your machine to run the pipeline. No other dependency is required. This defines a `dev` service you can use to run any command in an autommatic development environment. For example, to run unit tests, just run `docker-compose run dev pytest`.

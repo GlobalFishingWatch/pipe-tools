@@ -1,15 +1,7 @@
 version: '2'
 services:
-  test:
+  dev:
     image: gfw/pipe-tools
     build: .
-    command: py.test tests
     volumes:
-      - "./:/opt/project"
-
-  bash:
-    image: gfw/pipe-tools
-    build: .
-    command: bash
-    volumes:
-      - "./:/opt/project"
+      - ".:/opt/project"

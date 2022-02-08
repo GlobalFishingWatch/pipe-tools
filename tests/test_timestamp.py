@@ -31,8 +31,8 @@ class TestTimestampTools():
 
     def test_ParseBeamBQStrTimestamp(self):
         r = list(range(10))
-        source = [{'timestamp':beambqstrFromTimestamp(t)} for t in r] + [{'timestamp':None}]
-        expected = [{'timestamp':t} for t in r]+ [{'timestamp':None}]
+        source = [{b'timestamp':beambqstrFromTimestamp(t)} for t in r] + [{b'timestamp':None}]
+        expected = [{b'timestamp':datetime.utcfromtimestamp(t).strftime("%Y-%m-%d %H:%M:%S.%f UTC")} for t in r]+ [{b'timestamp':None}]
         timestamp_fields = 'timestamp'
 
         with _TestPipeline() as p:

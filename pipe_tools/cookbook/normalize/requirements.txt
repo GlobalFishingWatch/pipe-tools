@@ -1,4 +1,0 @@
-python-dateutil
-unidecode
-roman
-python-stdnum
