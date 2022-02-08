@@ -1,6 +1,6 @@
-# pipe-tools
+# *DEPRECATED* pipe-tools
 
-*DEPRECATED* Package providing [Apache Beam](https://beam.apache.org/) pipeline tools and utilities useful for some of our older Beam pipelines at Global Fishing Watch. If you are writing a new pipeline, chances are most of these utilities are already supported by the core beam libraries, and you shouldn't be adding this dependency anymore.
+Package providing [Apache Beam](https://beam.apache.org/) pipeline tools and utilities useful for some of our older Beam pipelines at Global Fishing Watch. If you are writing a new pipeline, chances are most of these utilities are already supported by the core beam libraries, and you shouldn't be adding this dependency anymore.
 
 ## Development
 
