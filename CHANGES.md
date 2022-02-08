@@ -9,6 +9,13 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 ## [Unreleased]
 
 
+## v3.2.2 - 2022-01-26
+
+### Removed
+
+* [PIPELINE-741](https://globalfishingwatch.atlassian.net/browse/PIPELINE-741): Removes
+  the bash part from the project.
+
 ## 3.2.1 - 2021-06-23
 
   * [PIPELINE-430](https://globalfishingwatch.atlassian.net/browse/PIPELINE-430): Changes

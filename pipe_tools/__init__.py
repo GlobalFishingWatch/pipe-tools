@@ -3,7 +3,7 @@ Tools for running the GFW pipeline.
 A python utility library for apache beam and bigquery
 """
 
-__version__ = '3.2.1'
+__version__ = '3.2.2'
 __author__ = 'Paul Woods'
 __email__ = 'paul@globalfishingwatch.org'
 __source__ = 'https://github.com/GlobalFishingWatch/pipe-tools'
