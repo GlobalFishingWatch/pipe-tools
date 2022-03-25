@@ -1,6 +1,7 @@
 import pytest
 import six
 import ujson
+import datetime
 
 import apache_beam as beam
 from apache_beam.testing.test_pipeline import TestPipeline as _TestPipeline
@@ -31,6 +32,14 @@ class TestCoders():
             {"test":None},
         ]
         coder = JSONDictCoder()
+        for r in records:
+            assert r == coder.decode(coder.encode(r))
+
+    def test_JSONDictCoderWithTimeFields(self):
+        records = [
+            {"timestamp": datetime.datetime(2012, 1, 1, 21, 20, 12, tzinfo=datetime.timezone.utc)},
+        ]
+        coder = JSONDictCoder(time_fields=['timestamp'])
         for r in records:
             assert r == coder.decode(coder.encode(r))
 
