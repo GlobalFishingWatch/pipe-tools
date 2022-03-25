@@ -64,7 +64,7 @@ class PartitionedFileSink(FileBasedSink):
                  file_name_suffix='',
                  append_trailing_newlines=True,
                  shard_name_template=None,
-                 coder=JSONDictCoder(),
+                 coder=JSONDictCoder(time_fields=['timestamp']),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
         self._do_sharding = (shard_name_template != '')
