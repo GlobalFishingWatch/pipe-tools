@@ -23,17 +23,16 @@ class JSONDictCoder(beam.coders.Coder):
         self.time_fields = time_fields
 
     def _encode(self, value):
-        replacements = {x: _datetime_to_s(value.get(x)) for x in self.time_fields}
+        replacements = {x: _datetime_to_s(value.get(x)) for x in self.time_fields if x in value.keys()}
         new_value = copy.deepcopy(value)
         new_value.update(replacements)
-        print(replacements, value, new_value)
         return new_value
 
     def encode(self, value):
         return six.ensure_binary(ujson.dumps(self._encode(value)))
 
     def _decode(self, value):
-        replacements = {x: _s_to_datetime(value.get(x)) for x in self.time_fields}
+        replacements = {x: _s_to_datetime(value.get(x)) for x in self.time_fields if x in value.keys()}
         new_value = copy.deepcopy(value)
         new_value.update(replacements)
         return new_value
