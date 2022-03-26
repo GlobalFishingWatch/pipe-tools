@@ -35,7 +35,7 @@ class WriteToDatePartitionedFiles(WritePartitionedFiles):
                  append_trailing_newlines=True,
                  shards_per_day=None,
                  shard_name_template=None,
-                 coder=JSONDictCoder(),
+                 coder=JSONDictCoder(time_fields=['timestamp','first_msg_timestamp','last_msg_timestamp','first_msg_of_day_timestamp','last_msg_of_day_timestamp','origin_ts','last_pos_ts','timestamp_min','timestamp_max','timestamp_first','timestamp_last']),
                  compression_type=CompressionTypes.AUTO,
                  header=None):
 
