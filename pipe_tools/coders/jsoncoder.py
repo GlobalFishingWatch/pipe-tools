@@ -11,7 +11,7 @@ from apache_beam import PTransform
 epoch = datetime.datetime.utcfromtimestamp(0).replace(tzinfo=pytz.utc)
 
 def _datetime_to_s(x):
-    return (x - epoch).total_seconds()
+    return ((x - epoch).total_seconds()) if isinstance(x, datetime.datetime) else x
 
 def _s_to_datetime(x):
     return epoch + datetime.timedelta(seconds=x)
