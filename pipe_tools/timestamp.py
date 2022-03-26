@@ -100,7 +100,7 @@ def beambqstrFromDatetime(dt):
 
 def rfc3339strFromBeamBQStr(s):
     """Convert a string formatted BEAM_BQ_TIMESTAMP_FORMAT to RFC3339_TIMESTAMP_FORMAT"""
-    return s[:-4].replace(' ', 'T')+'+00:00'
+    return s.strftime('%Y-%m-%dT%H:%M:%S+00:00') if isinstance(s,datetime) else s[:-4].replace(' ', 'T')+'+00:00'
 
 
 def udatetimeFromTimestamp(ts):
